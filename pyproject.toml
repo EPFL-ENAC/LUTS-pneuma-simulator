@@ -1,0 +1,121 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "pNeuma-simulator"
+version = "0.0.1"
+description = "A Python package for the pNeuma simulator."
+authors = ["Georg Anagnostopoulos"]
+readme = "README.md"
+keywords = ["python"]
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Operating System :: Unix",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: Microsoft :: Windows",
+]
+
+[tool.poetry.dependencies]
+python = ">=3.10"
+click = "*"
+jupyter = "*"
+numpy = "<2.1.0"
+matplotlib = "^3.9.2"
+joblib = "^1.4.2"
+scipy = "^1.14.0"
+tqdm = "^4.66.5"
+ipython = "^8.26.0"
+numba = "^0.60.0"
+
+[tool.poetry.dev-dependencies]
+pre-commit = "3.3.1"
+pytest = "*"
+pytest-cov = "*"
+
+[project.optional-dependencies]
+dev = [
+	"pre-commit==3.3.1",
+	"pytest",
+	"pytest-cov",
+	"pytest-mock",
+	"black==24.1.1",
+	"ruff==0.2.0",
+	"mypy",
+	"sphinx",
+	"sphinx_rtd_theme",
+	"nbsphinx",
+	"sphinx-pyproject",
+	"sphinx-mdinclude"
+]
+
+# Linter settings
+[tool.ruff]
+select = ["F",
+	  "E",
+	  "I",
+	  "Q",
+	  "W",
+	  "UP",
+	  # "SIM",
+	  # "PTH",
+	  # "RET",
+ ]
+ignore = ["E722"]
+line-length = 120
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = ["A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W", "ANN", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "FBT", "ICN", "INP", "ISC", "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RSE", "RUF", "SIM", "SLF", "TCH", "TID", "TRY", "UP", "YTT"]
+unfixable = []
+
+# Code formatter
+[tool.black]
+line-length = 120
+preview = true
+
+# Tests
+[tool.coverage.run]
+omit = []
+[tool.pytest.ini_options]
+addopts = "--cov --cov-report html --cov-report term-missing --cov-fail-under 5"
+
+# Type checking
+[tool.mypy]
+# Specify the Python version you are using
+python_version = "3.12"
+# avoid folder
+# Exclude specific files or directories from type checking
+# Example:
+# exclude = ["tests"]
+exclude = ["tests","build","venv"]
+disallow_untyped_defs = false
+warn_unused_ignores = true
+warn_unused_configs = true
+warn_no_return = true
+warn_return_any = false
+warn_unreachable = true
+show_error_codes = true
+pretty = true
+
+[tool.sphinx-pyproject]
+github_username = ""
+github_repository = ""
+author = ""
+project = ""
+copyright = ""
+language = "en"
+package_root = ""
+extensions = [
+	"sphinx.ext.napoleon",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.autosectionlabel",
+    "nbsphinx",
+    "sphinx_mdinclude",
+	"sphinx.ext.autosummary",
+]
+html_theme = "sphinx_rtd_theme"
+
+[tool.codespell]
+ignore-words-list = "socio-economic, checkin"
