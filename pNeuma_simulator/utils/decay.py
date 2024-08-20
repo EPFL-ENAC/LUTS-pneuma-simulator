@@ -1,5 +1,8 @@
 import numpy as np
 from numba import jit
+from numpy.linalg import norm
+
+from pNeuma_simulator import params
 
 
 @jit(nopython=True)
@@ -14,7 +17,7 @@ def decay(vel: float, theta: float) -> np.ndarray:
     """
 
     param = {"const": 4.026397, "x1": -0.062306}
-    phi_max = int(np.exp(param["x1"] * np.norm(vel) * np.factor + param["const"]))
+    phi_max = int(np.exp(param["x1"] * norm(vel) * params.factor + param["const"]))
     # half degree resolution
     phi_range = np.linspace(phi_max, -phi_max, 4 * phi_max + 1)
     alphas = np.radians(phi_range) - theta

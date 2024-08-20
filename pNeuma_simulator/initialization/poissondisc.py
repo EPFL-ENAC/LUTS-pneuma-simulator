@@ -3,7 +3,7 @@ from copy import deepcopy
 import numpy as np
 
 from pNeuma_simulator import params
-from pNeuma_simulator.ellipses import ellipses
+from pNeuma_simulator.dca import ellipses
 from pNeuma_simulator.particle import Particle
 
 

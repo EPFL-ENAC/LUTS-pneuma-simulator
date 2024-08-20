@@ -1,6 +1,6 @@
 from numba import jit
 
-from pNeuma_simulator.calc_dtc import calc_dtc
+from pNeuma_simulator.dca import calc_dtc
 
 
 @jit(nopython=True)
@@ -19,32 +19,37 @@ def newton_iteration(
     vy_j: float,
     vx_i: float,
     vy_i: float,
+    max_iterations: int = 10,
+    tolerance: float = 0.05,
+    epsilon: float = 0.001,
+    h: float = 0.001,
 ):
     """
     Perform Newton's iteration to find the time-to-collision (TTC) between two objects.
-    Parameters:
-    - l_j (float): Length of object j.
-    - w_j (float): Width of object j.
-    - l_i (float): Length of object i.
-    - w_i (float): Width of object i.
-    - x_j (float): x-coordinate of object j.
-    - y_j (float): y-coordinate of object j.
-    - x_i (float): x-coordinate of object i.
-    - y_i (float): y-coordinate of object i.
-    - theta_j (float): Orientation angle of object j.
-    - theta_i (float): Orientation angle of object i.
-    - vx_j (float): x-component of velocity of object j.
-    - vy_j (float): y-component of velocity of object j.
-    - vx_i (float): x-component of velocity of object i.
-    - vy_i (float): y-component of velocity of object i.
+
+    Args:
+        l_j (float): Length of object j.
+        w_j (float): Width of object j.
+        l_i (float): Length of object i.
+        w_i (float): Width of object i.
+        x_j (float): x-coordinate of object j.
+        y_j (float): y-coordinate of object j.
+        x_i (float): x-coordinate of object i.
+        y_i (float): y-coordinate of object i.
+        theta_j (float): Orientation angle of object j.
+        theta_i (float): Orientation angle of object i.
+        vx_j (float): x-component of velocity of object j.
+        vy_j (float): y-component of velocity of object j.
+        vx_i (float): x-component of velocity of object i.
+        vy_i (float): y-component of velocity of object i.
+        max_iterations (int): Maximum number of iterations.
+        epsilon (float): Small value to avoid division by zero.
+        tolerance (float): Desired tolerance.
+        h (float): Step size for Newton's iteration.
 
     Returns:
-    - l_ttc (list): List of time-to-collision values within the desired tolerance and maximum number of iterations.
+        l_ttc (list): List of time-to-collision values within the desired tolerance and maximum number of iterations.
     """
-    max_iterations = 10  # TODO: pass this as parameter
-    tolerance = 0.05
-    epsilon = 0.001
-    h = 0.001
     l_ttc = []
     ttc_0 = 0
     for _ in range(max_iterations):

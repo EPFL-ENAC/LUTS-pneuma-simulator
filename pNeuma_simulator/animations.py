@@ -4,11 +4,17 @@ from numpy import arange, degrees
 from numpy.linalg import norm
 
 from pNeuma_simulator import params
-from pNeuma_simulator.particle import Particle
+from pNeuma_simulator.gang.particle import Particle
 
 
 def draw(particle: Particle, ax: mpl_axes.Axes) -> None:
-    """Add this Particle's Ellipse patch to the Matplotlib Axes ax."""
+    """
+    Add this Particle's Ellipse patch to the Matplotlib Axes.
+
+    Args:
+        particle (Particle): The particle object to be drawn.
+        ax (mpl_axes.Axes): The Matplotlib Axes object to add the patch to.
+    """
     ellipse = Ellipse(
         xy=particle["pos"],
         width=2 * particle["l"],
@@ -22,12 +28,12 @@ def draw(particle: Particle, ax: mpl_axes.Axes) -> None:
 def ring(t: int, l_agents: list, ax: mpl_axes.Axes, sampler) -> None:
     """
     Draw the ring animation for a given time step.
-    Parameters:
-    - t (int): The time step.
-    - l_agents (list): A list of agents at each time step.
-    - ax (matplotlib.axes.Axes): The matplotlib axes object to draw the animation on.
-    Returns:
-    None
+
+    Args:
+        t (int): The time step.
+        l_agents (list): A list of agents at each time step.
+        ax (matplotlib.axes.Axes): The matplotlib axes object to draw the animation on.
+        sampler: The sampler object.
     """
 
     for agent in l_agents[t]:
