@@ -53,7 +53,7 @@ dev = [
 
 # Linter settings
 [tool.ruff]
-select = ["F",
+lint.select = ["F",
 	  "E",
 	  "I",
 	  "Q",
@@ -62,12 +62,12 @@ select = ["F",
 	  # "SIM",
 	  # "PTH",
 	  # "RET",
- ]
-ignore = ["E722"]
+]
+lint.ignore = ["E722"]
 line-length = 120
 # Allow autofix for all enabled rules (when `--fix`) is provided.
-fixable = ["A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W", "ANN", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "FBT", "ICN", "INP", "ISC", "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RSE", "RUF", "SIM", "SLF", "TCH", "TID", "TRY", "UP", "YTT"]
-unfixable = []
+lint.fixable = ["A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W", "ANN", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "FBT", "ICN", "INP", "ISC", "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RSE", "RUF", "SIM", "SLF", "TCH", "TID", "TRY", "UP", "YTT"]
+lint.unfixable = []
 
 # Code formatter
 [tool.black]
@@ -118,4 +118,4 @@ extensions = [
 html_theme = "sphinx_rtd_theme"
 
 [tool.codespell]
-ignore-words-list = "socio-economic, checkin"
+ignore-words-list = "socio-economic, checkin, infront"
