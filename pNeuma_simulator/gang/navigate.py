@@ -1,10 +1,10 @@
 import numpy as np
 
-from pNeuma_simulator.collisions import collisions
-from pNeuma_simulator.decay import decay
-from pNeuma_simulator.neighborhood import neighborhood
-from pNeuma_simulator.particle import Particle
-from pNeuma_simulator.target import target
+from pNeuma_simulator.gang.collisions import collisions
+from pNeuma_simulator.gang.neighborhood import neighborhood
+from pNeuma_simulator.gang.particle import Particle
+from pNeuma_simulator.utils.decay import decay
+from pNeuma_simulator.utils.target import target
 
 
 def navigate(ego: Particle, agents: list[Particle], integer: int, d_max) -> tuple:

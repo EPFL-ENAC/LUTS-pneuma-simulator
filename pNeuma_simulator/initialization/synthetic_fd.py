@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.stats import distributions
 
-from pNeuma_simulator.utils import truncated_rvs
+from pNeuma_simulator.utils.truncated_rvs import truncated_rvs
 
 
 def synthetic_fd(n_veh: int, random_state, mode: str = "Car", distributed: bool = True):

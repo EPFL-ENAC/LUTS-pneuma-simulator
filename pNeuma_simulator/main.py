@@ -8,16 +8,17 @@ from numpy.linalg import norm
 
 from pNeuma_simulator import params
 from pNeuma_simulator.dca import ellipses
-from pNeuma_simulator.direction import direction
 from pNeuma_simulator.gang.collision_exception import CollisionException
+from pNeuma_simulator.gang.navigate import navigate
+from pNeuma_simulator.gang.neighborhood import neighborhood
 from pNeuma_simulator.identify import identify
 from pNeuma_simulator.infront import infront
 from pNeuma_simulator.initialization import equilibrium, ov
 from pNeuma_simulator.initialization.poissondisc import PoissonDisc
-from pNeuma_simulator.navigate import navigate
-from pNeuma_simulator.neighborhood import neighborhood
 from pNeuma_simulator.shadowcasting import shadowcasting
-from pNeuma_simulator.utils import projection, tangent_dist
+from pNeuma_simulator.utils.direction import direction
+from pNeuma_simulator.utils.projection import projection
+from pNeuma_simulator.utils.tangent_dist import tangent_dist
 
 
 def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 500, distributed: bool = True):

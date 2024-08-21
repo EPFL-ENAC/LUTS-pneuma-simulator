@@ -1,6 +1,6 @@
 import numpy as np
 
-from pNeuma_simulator.particle import Particle
+from pNeuma_simulator.gang.particle import Particle
 
 
 def radial(agent: Particle, xv: float, yv: float) -> float:

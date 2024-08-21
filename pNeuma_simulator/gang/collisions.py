@@ -1,9 +1,9 @@
 from math import cos, radians, sin
 
 from pNeuma_simulator import params
+from pNeuma_simulator.gang.particle import Particle
 from pNeuma_simulator.newton_iteration import newton_iteration
-from pNeuma_simulator.particle import Particle
-from pNeuma_simulator.tangent_dist import tangent_dist
+from pNeuma_simulator.utils.tangent_dist import tangent_dist
 
 
 def collisions(ego: Particle, speed: float, theta: float, neighbors: list[Particle]):

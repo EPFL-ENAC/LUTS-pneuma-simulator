@@ -4,7 +4,7 @@ import numpy as np
 
 from pNeuma_simulator import params
 from pNeuma_simulator.dca import ellipses
-from pNeuma_simulator.particle import Particle
+from pNeuma_simulator.gang.particle import Particle
 
 
 class PoissonDisc:

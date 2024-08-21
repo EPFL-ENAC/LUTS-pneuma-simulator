@@ -1,4 +1,4 @@
-from pNeuma_simulator.particle import Particle
+from pNeuma_simulator.gang.particle import Particle
 
 
 def neighborhood(ego: Particle, candidates: list[Particle]) -> list[Particle]:

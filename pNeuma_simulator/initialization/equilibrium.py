@@ -4,7 +4,7 @@ from scipy.optimize import root_scalar
 
 from pNeuma_simulator import params
 from pNeuma_simulator.initialization import budget, f, vo
-from pNeuma_simulator.probabilities import synthetic_fd
+from pNeuma_simulator.initialization.synthetic_fd import synthetic_fd
 
 
 def equilibrium(L: float, lanes: int, n_cars: int, n_moto: int, rng: object, distributed: bool = True) -> tuple:
