@@ -1,24 +1,22 @@
+import warnings
 from copy import deepcopy
 from math import isinf, radians
 from typing import Callable
 
 import numpy as np
-from joblib import delayed
+from joblib import Parallel, delayed
 from numpy.linalg import norm
 
 from pNeuma_simulator import params
 from pNeuma_simulator.dca import ellipses
-from pNeuma_simulator.gang.collision_exception import CollisionException
-from pNeuma_simulator.gang.navigate import navigate
+from pNeuma_simulator.gang import navigate
 from pNeuma_simulator.gang.neighborhood import neighborhood
 from pNeuma_simulator.identify import identify
 from pNeuma_simulator.infront import infront
 from pNeuma_simulator.initialization import equilibrium, ov
 from pNeuma_simulator.initialization.poissondisc import PoissonDisc
 from pNeuma_simulator.shadowcasting import shadowcasting
-from pNeuma_simulator.utils.direction import direction
-from pNeuma_simulator.utils.projection import projection
-from pNeuma_simulator.utils.tangent_dist import tangent_dist
+from pNeuma_simulator.utils import direction, projection, tangent_dist
 
 
 def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 500, distributed: bool = True):
@@ -267,3 +265,37 @@ def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 5
             agent.image = None
 
     return (l_agents, [])
+
+
+def batch(seed: int, permutation: tuple):
+    """
+    Run a batch simulation with the given seed and permutation.
+
+    Args:
+        seed (int): The seed for random number generation.
+        permutation (tuple): A tuple containing the number of cars and motorcycles.
+
+    Returns:
+        tuple: A tuple containing the simulation results for cars and motorcycles.
+    """
+
+    warnings.filterwarnings("ignore", category=RuntimeWarning)
+    n_cars, n_moto = permutation
+    with Parallel(n_jobs=-1, prefer="processes") as parallel:
+        try:
+            item = main(n_cars, n_moto, seed, parallel, params.COUNT)
+        except CollisionException:
+            item = (None, None)
+    return item
+
+
+class CollisionException(Exception):
+    """Raised when agents collide"""
+
+    # https://stackoverflow.com/questions/1319615
+    def __init__(self, message, payload=None):
+        self.message = message
+        self.payload = payload
+
+    def __str__(self):
+        return str(self.message)

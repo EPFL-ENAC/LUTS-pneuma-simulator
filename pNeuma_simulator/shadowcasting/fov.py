@@ -1,7 +1,5 @@
 from fractions import Fraction
-
-from pNeuma_simulator.shadowcasting.quadrant import Quadrant
-from pNeuma_simulator.shadowcasting.row import Row
+from math import ceil, floor
 
 
 class FoV:
@@ -65,3 +63,47 @@ class FoV:
             first_row = Row(1, Fraction(-1), Fraction(1))
             scan(first_row)
         return self.is_visible
+
+
+class Quadrant:
+    north = 0
+    east = 1
+    south = 2
+    west = 3
+
+    def __init__(self, cardinal, origin):
+        self.cardinal = cardinal
+        self.ox, self.oy = origin
+
+    def transform(self, tile):
+        row, col = tile
+        if self.cardinal == self.north:
+            return (self.ox + col, self.oy - row)
+        if self.cardinal == self.south:
+            return (self.ox + col, self.oy + row)
+        if self.cardinal == self.east:
+            return (self.ox + row, self.oy + col)
+        if self.cardinal == self.west:
+            return (self.ox - row, self.oy + col)
+
+
+class Row:
+    def __init__(self, depth, start_slope, end_slope):
+        self.depth = depth
+        self.start_slope = start_slope
+        self.end_slope = end_slope
+
+    def round_ties_up(self, n):
+        return floor(n + 0.5)
+
+    def round_ties_down(self, n):
+        return ceil(n - 0.5)
+
+    def tiles(self):
+        min_col = self.round_ties_up(self.depth * self.start_slope)
+        max_col = self.round_ties_down(self.depth * self.end_slope)
+        for col in range(min_col, max_col + 1):
+            yield (self.depth, col)
+
+    def next(self):
+        return Row(self.depth + 1, self.start_slope, self.end_slope)
