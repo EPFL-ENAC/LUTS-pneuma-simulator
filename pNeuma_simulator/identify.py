@@ -6,10 +6,12 @@ from numba import jit
 def identify(matrix: np.ndarray, image_rad: np.ndarray, ID: int) -> np.ndarray:
     """
     Identifies and replaces pixels in the matrix with the given ID based on a condition.
+
     Args:
         matrix (ndarray): The input matrix.
         image_rad (ndarray): The flattened array of image radii.
         ID (int): The ID to replace the pixels with.
+
     Returns:
         ndarray: The modified matrix with replaced pixels.
     """

@@ -4,12 +4,10 @@ import os
 def zipdir(path: str, ziph) -> None:
     """
     Zip the directory at the given path.
-    Parameters:
-    - path (str): The path of the directory to be zipped.
-    - ziph: The zipfile handle.
 
-    Returns:
-    - None
+    Args:
+        path (str): The path of the directory to be zipped.
+        ziph: The zipfile handle.
     """
     # ziph is zipfile handle
     # https://stackoverflow.com/questions/1855095/

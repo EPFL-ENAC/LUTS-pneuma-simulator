@@ -22,6 +22,7 @@ from pNeuma_simulator.utils import direction, projection, tangent_dist
 def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 500, distributed: bool = True):
     """
     Simulates the main loop of a pNeuma simulator.
+
     Args:
         n_cars (int): Number of cars.
         n_moto (int): Number of motorcycles.
@@ -29,6 +30,7 @@ def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 5
         parallel (Callable): Callable object for parallel execution.
         COUNT (int, optional): Number of iterations in the main loop. Defaults to 500.
         distributed (bool, optional): Flag indicating if the simulation is distributed. Defaults to True.
+
     Returns:
         Tuple: A tuple containing the list of serialized agents at each iteration and an empty list.
     """

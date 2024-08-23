@@ -8,6 +8,16 @@ from pNeuma_simulator.initialization import ov
 
 
 def loader(permutation, path: str):
+    """
+    Loads and returns the items from a JSON file within a zip archive.
+
+    Args:
+        permutation: The permutation to be used in the zip file name.
+        path (str): The path to the directory containing the zip file.
+
+    Returns:
+        list: The items loaded from the JSON file.
+    """
     with zipfile.ZipFile(f"{path}{permutation}.zip", "r") as ziph:
         # ziph is zipfile handle
         for filename in ziph.namelist():
@@ -23,22 +33,24 @@ def loader(permutation, path: str):
 def aggregate(l_agents, n_cars: int, n_moto: int, d_max: float, critical: int = 3):
     """
     Calculate various aggregate metrics based on the given list of agents.
-    Parameters:
-    - l_agents (list[Particle]): A list of agents. (#list(list(Particles))?)
-    - n_cars (int): The number of cars.
-    - n_moto (int): The number of motorcycles.
-    - d_max (float): The maximum distance.
-    - critical (int, optional): The critical value. Defaults to 3.
+
+    Args:
+        l_agents (list[Particle]): A list of agents. (#list(list(Particles))?)
+        n_cars (int): The number of cars.
+        n_moto (int): The number of motorcycles.
+        d_max (float): The maximum distance.
+        critical (int, optional): The critical value. Defaults to 3.
+
     Returns:
-    - VKT (float): Vehicle Kilometers Traveled.
-    - VHT (float): Vehicle Hours Traveled.
-    - VKT_cars (float): Vehicle Kilometers Traveled by cars.
-    - VHT_cars (float): Vehicle Hours Traveled by cars.
-    - E_cars (float): Energy consumption by cars.
-    - VKT_moto (float): Vehicle Kilometers Traveled by motorcycles.
-    - VHT_moto (float): Vehicle Hours Traveled by motorcycles.
-    - E_moto (float): Energy consumption by motorcycles.
-    - risk (float or None): Risk value, only applicable if there are motorcycles.
+        VKT (float): Vehicle Kilometers Traveled.
+        VHT (float): Vehicle Hours Traveled.
+        VKT_cars (float): Vehicle Kilometers Traveled by cars.
+        VHT_cars (float): Vehicle Hours Traveled by cars.
+        E_cars (float): Energy consumption by cars.
+        VKT_moto (float): Vehicle Kilometers Traveled by motorcycles.
+        VHT_moto (float): Vehicle Hours Traveled by motorcycles.
+        E_moto (float): Energy consumption by motorcycles.
+        risk (float or None): Risk value, only applicable if there are motorcycles.
     """
 
     duration = int((len(l_agents)) * params.dt)

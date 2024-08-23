@@ -7,14 +7,16 @@ from numpy.linalg import norm
 def infront(e_i, pos_i, pos_j):
     """
     Determines if a neighbor is in front of a given position.
-    Parameters:
-    - e_i: The direction vector of the current position.
-    - pos_i: The current position.
-    - pos_j: The position of the neighbor.
+
+    Args:
+        e_i: The direction vector of the current position.
+        pos_i: The current position.
+        pos_j: The position of the neighbor.
+
     Returns:
-    - front: A boolean indicating if the neighbor is in front of the current position.
-    - e_i_j: The unit vector from the current position to the neighbor.
-    - s_i_j: The distance from the current position to the neighbor.
+        front: A boolean indicating if the neighbor is in front of the current position.
+        e_i_j: The unit vector from the current position to the neighbor.
+        s_i_j: The distance from the current position to the neighbor.
     """
 
     # Distance from i to j

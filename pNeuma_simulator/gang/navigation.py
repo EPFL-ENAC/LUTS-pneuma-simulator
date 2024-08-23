@@ -132,11 +132,12 @@ def target(alphas, f_a, d_max, rng) -> tuple:
 def decay(vel: float, theta: float) -> np.ndarray:
     """
     Calculate the decay angles for a given velocity and angle.
-    Parameters:
-    - vel (float): The velocity value.
-    - theta (float): The angle value.
+    Args:
+        vel (float): The velocity value.
+        theta (float): The angle value.
+
     Returns:
-    - alphas (numpy.ndarray): An array of decay angles.
+        alphas (numpy.ndarray): An array of decay angles.
     """
 
     param = {"const": 4.026397, "x1": -0.062306}

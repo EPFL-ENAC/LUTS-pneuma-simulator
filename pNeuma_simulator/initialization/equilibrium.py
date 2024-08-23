@@ -86,25 +86,25 @@ def equilibrium(L: float, lanes: int, n_cars: int, n_moto: int, rng: object, dis
     """
     Calculate the equilibrium state of a simulation, assuming lane-based equilibrium
 
-    Parameters:
-    - L (float): Length of the simulation.
-    - lanes (int): Number of lanes in the simulation.
-    - n_cars (int): Number of cars in the simulation.
-    - n_moto (int): Number of motorcycles in the simulation.
-    - rng (object): Random number generator.
-    - distributed (bool, optional): Whether the vehicles are distributed or not. Defaults to True.
+    Args:
+        L (float): Length of the simulation.
+        lanes (int): Number of lanes in the simulation.
+        n_cars (int): Number of cars in the simulation.
+        n_moto (int): Number of motorcycles in the simulation.
+        rng (object): Random number generator.
+        distributed (bool, optional): Whether the vehicles are distributed or not. Defaults to True.
 
     Returns:
-    - tuple: A tuple for longitundinal dynamics, containing the adaptation time (tau), lambda (lam), initial velocity
-    (v0), and distance (d).
+        tuple: A tuple for longitundinal dynamics, containing the adaptation time (tau), lambda (lam), initial velocity
+        (v0), and distance (d).
 
     Note:
-    - The function assumes that the length (L) is large enough for convergence.
-    - The function uses synthetic_fd to generate synthetic fundamental diagrams for cars and motorcycles.
-    - The equilibrium speed (v_eq) is calculated using root_scalar.
-    - The function checks if the total sum of speeds and distances equals the expected value (lanes * L).
-    - The function calculates the adaptation time (tau) based on the equilibrium speeds and fundamental diagrams.
-    - The adaptation time is limited by the minimum of 2 / lambda and the calculated tau values.
+    The function assumes that the length (L) is large enough for convergence.
+    The function uses synthetic_fd to generate synthetic fundamental diagrams for cars and motorcycles.
+    The equilibrium speed (v_eq) is calculated using root_scalar.
+    The function checks if the total sum of speeds and distances equals the expected value (lanes * L).
+    The function calculates the adaptation time (tau) based on the equilibrium speeds and fundamental diagrams.
+    The adaptation time is limited by the minimum of 2 / lambda and the calculated tau values.
     """
     while True:
         # Caution !!! If L is too small this will never converge !!!

@@ -8,10 +8,13 @@ from pNeuma_simulator.gang.particle import Particle
 def direction(theta_i: float) -> tuple:
     """
     Calculate the current direction vector and the normal vector to the current direction.
-    Parameters:
-    theta_i (float): The angle in radians representing the current direction.
+
+    Args:
+        theta_i (float): The angle in radians representing the current direction.
+
     Returns:
-    tuple: A tuple containing the current direction vector (e_i) and the normal vector to the current direction (e_i_n).
+        tuple: A tuple containing the current direction vector (e_i) and the normal vector to the current direction
+        (e_i_n).
     """
 
     # Current direction vector
@@ -26,12 +29,14 @@ def direction(theta_i: float) -> tuple:
 def projection(e_i_n, e_i_j, s_i_j: float) -> float:
     """
     Calculates the projection of vector e_i_j onto vector e_i_n.
-    Parameters:
-    e_i_n (array-like): The vector onto which the projection is made.
-    e_i_j (array-like): The vector being projected.
-    s_i_j (float): The magnitude of vector e_i_j.
+
+    Args:
+        e_i_n (array-like): The vector onto which the projection is made.
+        e_i_j (array-like): The vector being projected.
+        s_i_j (float): The magnitude of vector e_i_j.
+
     Returns:
-    float: The projection of vector e_i_j onto vector e_i_n.
+        float: The projection of vector e_i_j onto vector e_i_n.
     """
 
     proj = abs(np.dot(e_i_n, e_i_j)) * s_i_j
@@ -41,16 +46,18 @@ def projection(e_i_n, e_i_j, s_i_j: float) -> float:
 def radial(agent: Particle, xv: float, yv: float) -> float:
     """
     Calculate the radial distance between an agent and a point in a 2D plane.
-    Parameters:
-    - agent (dict): A dictionary representing the agent with the following keys:
-        - "theta" (float): The angle of the agent in radians.
-        - "pos" (tuple): The position of the agent as a tuple of (x, y) coordinates.
-        - "l" (float): The length of the agent.
-        - "w" (float): The width of the agent.
-    - xv (float): The x-coordinate of the point.
-    - yv (float): The y-coordinate of the point.
+
+    Args:
+        agent (dict): A dictionary representing the agent with the following keys:
+            - "theta" (float): The angle of the agent in radians.
+            - "pos" (tuple): The position of the agent as a tuple of (x, y) coordinates.
+            - "l" (float): The length of the agent.
+            - "w" (float): The width of the agent.
+        xv (float): The x-coordinate of the point.
+        yv (float): The y-coordinate of the point.
+
     Returns:
-    - rad (float): The radial distance between the agent and the point.
+        rad (float): The radial distance between the agent and the point.
     """
 
     cos_angle = np.cos(np.pi - agent["theta"])
@@ -69,14 +76,14 @@ def tangent_dist(theta_i: float, theta_j: float, a_i: float, b_i: float) -> floa
     """
     Calculate the tangent distance between two angles.
 
-    Parameters:
-    - theta_i (float): The first angle in radians.
-    - theta_j (float): The second angle in radians.
-    - a_i (float): The value of a_i.
-    - b_i (float): The value of b_i.
+    Args:
+        theta_i (float): The first angle in radians.
+        theta_j (float): The second angle in radians.
+        a_i (float): The value of a_i.
+        b_i (float): The value of b_i.
 
     Returns:
-    - k_prime (float): The tangent distance between theta_i and theta_j.
+        k_prime (float): The tangent distance between theta_i and theta_j.
     """
     if round(np.cos(theta_j - theta_i), 15) != 0:
         c_prime = np.sin(theta_j - theta_i) / np.cos(theta_j - theta_i)
