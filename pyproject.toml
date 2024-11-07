@@ -14,10 +14,26 @@ classifiers = [
     "Operating System :: Microsoft :: Windows",
 ]
 packages = [{include = "pNeuma_simulator"}]
+homepage = "https://github.com/EPFL-ENAC/LUTS-pneuma-simulator"
+repository = "https://github.com/EPFL-ENAC/LUTS-pneuma-simulator"
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = [
+    "poetry-core",
+    "poetry-dynamic-versioning>=1.0.0,<2.0.0"
+]
+build-backend = "poetry_dynamic_versioning.backend"
+
+[tool.poetry-dynamic-versioning]
+enable = true
+vcs = "git"
+style = "semver"
+
+[tool.poetry-dynamic-versioning.substitution]
+files = [
+	"pNeuma_simulator/__init__.py",
+	"docs/conf.py"
+]
 
 [tool.poetry.dependencies]
 python = ">=3.10"
