@@ -8,7 +8,7 @@ from joblib import Parallel, delayed
 from numpy.linalg import norm
 
 from pNeuma_simulator import params
-from pNeuma_simulator.dca import ellipses
+from pNeuma_simulator.contact_distance import ellipses
 from pNeuma_simulator.gang import navigate
 from pNeuma_simulator.gang.neighborhood import neighborhood
 from pNeuma_simulator.identify import identify

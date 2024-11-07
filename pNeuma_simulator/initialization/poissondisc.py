@@ -3,7 +3,7 @@ from copy import deepcopy
 import numpy as np
 
 from pNeuma_simulator import params
-from pNeuma_simulator.dca import ellipses
+from pNeuma_simulator.contact_distance import ellipses
 from pNeuma_simulator.gang.particle import Particle
 
 

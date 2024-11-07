@@ -3,7 +3,7 @@ from math import cos, radians, sin
 from numba import jit
 
 from pNeuma_simulator import params
-from pNeuma_simulator.dca import calc_dtc
+from pNeuma_simulator.contact_distance import calc_dtc
 from pNeuma_simulator.gang.particle import Particle
 from pNeuma_simulator.utils import tangent_dist
 
