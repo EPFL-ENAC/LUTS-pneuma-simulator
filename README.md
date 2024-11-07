@@ -1,32 +1,19 @@
 
 [![Project Status](https://img.shields.io/badge/status-under%20development-yellow)](https://github.com/EPFL-ENAC/pNeuma-simulator)
 
-
 # pNeuma-simulator
 
+## Installation
 
+First, clone the repository. Then, install the package using
 
+```bash
+$ pip install -e .[dev]
+```
 
-**What is included on this project?**
-
-📦 A basic `pyproject.toml` file to provide installation, packaging and distribution for your project.
-
-🧪 Testing structure using [Pytest](https://docs.pytest.org/en/latest/).
-
-✅ Code linter [Ruff](https://github.com/charliermarsh/ruff).
-
-✏️ Code formatter using [Black](https://github.com/psf/black).
-
-🤝 Typing checking using [Mypy](https://mypy.readthedocs.io/en/stable/).
-
-🔄 Continuous integration using [Github Actions](https://github.com/EPFL-ENAC/pNeuma-simulator/blob/main/.github/workflows) with jobs to check the quality of your code.
-
-📃 Documentation with [Sphinx](https://www.sphinx-doc.org/en/master/) and [Readthedocs](https://readthedocs.org/).
-
-
+If installing the package on macOS, replace `.[dev]` by `'.[dev]'`
 
 ## Project structure
-
 
 This repository contains the following files and folders:
 
@@ -39,7 +26,7 @@ This repository contains the following files and folders:
  ┃    ┣ 📜 code_quality.yml : Ruff + Black + mypy
  ┃    ┗ 📜 tests.yml : pytest + CodeCov
  ┣ 📁 docs: contains the documentation.
- ┣ 📁 project_name: contains the project code.
+ ┣ 📁 pNeuma_simulator: contains the project code.
  ┃ ┗ 📜 *.py
  ┣ 📁 test: contains the project tests.
  ┃ ┗ 📜 test_*.py
@@ -51,5 +38,10 @@ This repository contains the following files and folders:
  ┣ 📜 LICENSE: license file.
  ┣ 📜 pyproject.toml: project configuration file.
  ┣ 📜 README.md: markdown file containing the project's readme.
- ┣ 📜 readthedocs.yml: Settings for readthedocs.
  ```
+
+## Building the docs
+
+```bash
+$ cd docs && make html SPHINXOPTS="-d _build/doctrees"
+```
