@@ -53,6 +53,7 @@ def radial(agent: Particle, xv: float, yv: float) -> float:
             - "pos" (tuple): The position of the agent as a tuple of (x, y) coordinates.
             - "l" (float): The length of the agent.
             - "w" (float): The width of the agent.
+
         xv (float): The x-coordinate of the point.
         yv (float): The y-coordinate of the point.
 
