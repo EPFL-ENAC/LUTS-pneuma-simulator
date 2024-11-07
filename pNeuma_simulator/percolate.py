@@ -7,7 +7,23 @@ from pNeuma_simulator.gang import decay
 from pNeuma_simulator.initialization import ov
 
 
-def percolate(items, n_moto, start=1):
+def percolate(items, n_moto, start: int = 1):
+    """
+    Analyzes the percolation of vehicles and motorcycles in a given dataset.
+
+    Parameters:
+    items (list): A list of items where each item is a list of frames. Each frame is a dictionary containing vehicle
+        data.
+    n_moto (int): The number of motorcycles in the dataset.
+    start (int, optional): The starting frame index to consider for analysis. Defaults to 1.
+
+    Returns:
+    tuple: A tuple containing four lists:
+        - x (list): The bin centers for the binned data.
+        - y (list): The mean difference in velocity between motorcycles and cars for each bin.
+        - low (list): The lower bound of the confidence interval for each bin.
+        - high (list): The upper bound of the confidence interval for each bin.
+    """
     l_T = []
     l_DPhi = []
     for item in items:
@@ -42,4 +58,5 @@ def percolate(items, n_moto, start=1):
     x = (bin_edges[1:] + bin_edges[:-1]) / 2
     low, _, _ = binned_statistic(l_T, l_DPhi, statistic=lambda y: confidence_interval(y, "low"), bins=bins)
     high, _, _ = binned_statistic(l_T, l_DPhi, statistic=lambda y: confidence_interval(y, "high"), bins=bins)
+
     return list(x), list(y), list(low), list(high)
