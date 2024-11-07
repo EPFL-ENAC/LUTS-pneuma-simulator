@@ -48,7 +48,7 @@ def collisions(ego: Particle, speed: float, theta: float, neighbors: list[Partic
         theta_j = neighbor.theta
         x_j, y_j = neighbor.x, neighbor.y
         vx_j, vy_j = neighbor.vx, neighbor.vy
-        ttc = newton_iteration(
+        ttc, _ = newton_iteration(
             l_j,
             w_j,
             l_i,
@@ -64,8 +64,8 @@ def collisions(ego: Particle, speed: float, theta: float, neighbors: list[Partic
             vx_i,
             vy_i,
         )
-        if len(ttc) > 0:
-            l_ttc.extend(ttc)
+        if ttc:
+            l_ttc.append(ttc)
     if len(l_ttc) > 0:
         return min(l_ttc)
     else:
@@ -88,10 +88,9 @@ def newton_iteration(
     vy_j: float,
     vx_i: float,
     vy_i: float,
-    max_iterations: int = 10,
-    tolerance: float = 0.05,
-    epsilon: float = 0.001,
-    h: float = 0.001,
+    max_iterations: int = 1000,
+    tolerance: float = 1e-3,
+    delta: float = 1e-9,
 ):
     """
     Perform Newton's iteration to find the time-to-collision (TTC) between two objects.
@@ -111,38 +110,43 @@ def newton_iteration(
         vy_j (float): y-component of velocity of object j.
         vx_i (float): x-component of velocity of object i.
         vy_i (float): y-component of velocity of object i.
-        max_iterations (int): Maximum number of iterations.
-        epsilon (float): Small value to avoid division by zero.
-        tolerance (float): Desired tolerance.
-        h (float): Step size for Newton's iteration.
+        max_iterations (int, optional): Maximum number of iterations. Default is 1000.
+        tolerance (float, optional): Desired tolerance. Default is 0.001.
+        delta (float, optional): Small value to avoid division by zero. Default is 1e-9.
 
     Returns:
-        l_ttc (list): List of time-to-collision values within the desired tolerance and maximum number of iterations.
+        tuple: A tuple containing:
+            - float: Time-to-collision value within the desired tolerance and maximum number of iterations, or None if
+            no solution is found.
+            - int: Number of iterations performed, or None if no solution is found.
     """
-    l_ttc = []
-    ttc_0 = 0
-    for _ in range(max_iterations):
-        x_j_0 = x_j + vx_j * ttc_0
-        y_j_0 = y_j + vy_j * ttc_0
-        x_i_0 = x_i + vx_i * ttc_0
-        y_i_0 = y_i + vy_i * ttc_0
-        dtc = calc_dtc(l_j, w_j, l_i, w_i, x_j_0, y_j_0, x_i_0, y_i_0, theta_j, theta_i)
-        if (dtc <= 0) and (ttc_0 > 0):
-            l_ttc.append(ttc_0)  # a solution within tolerance and maximum number of iterations
-            break
-        x_j_0_ = x_j + vx_j * (ttc_0 + h)
-        y_j_0_ = y_j + vy_j * (ttc_0 + h)
-        x_i_0_ = x_i + vx_i * (ttc_0 + h)
-        y_i_0_ = y_i + vy_i * (ttc_0 + h)
-        dtc_ = calc_dtc(l_j, w_j, l_i, w_i, x_j_0_, y_j_0_, x_i_0_, y_i_0_, theta_j, theta_i)
-        if dtc_ < dtc:
-            dtc_prime = (dtc_ - dtc) / h
-            if abs(dtc_prime) < epsilon:  # Give up if the denominator is too small
-                break
-            ttc_1 = ttc_0 - dtc / dtc_prime  # Do Newton's computation
-            if abs(ttc_1 - ttc_0) <= tolerance:  # Stop when the result is within the desired tolerance
-                l_ttc.append(ttc_1)  # a solution within tolerance and maximum number of iterations
-                break
+    t0 = 0
+    for iterations in range(max_iterations):
+        # Coordinates at t0
+        y_j0 = y_j + vy_j * t0
+        x_i0 = x_i + vx_i * t0
+        x_j0 = x_j + vx_j * t0
+        y_i0 = y_i + vy_i * t0
+        d0 = calc_dtc(l_j, w_j, l_i, w_i, x_j0, y_j0, x_i0, y_i0, theta_j, theta_i)
 
-            ttc_0 = ttc_1  # Update x0 to start the process again
-    return l_ttc
+        # Coordinates at (t0 + delta)
+        x_j1 = x_j + vx_j * (t0 + delta)
+        y_i1 = y_i + vy_i * (t0 + delta)
+        y_j1 = y_j + vy_j * (t0 + delta)
+        x_i1 = x_i + vx_i * (t0 + delta)
+        d1 = calc_dtc(l_j, w_j, l_i, w_i, x_j1, y_j1, x_i1, y_i1, theta_j, theta_i)
+
+        if d1 > d0:  # Give up if agents are diverging
+            break
+        if d1 == d0:
+            return (t0, iterations)  # Equilibrium solution
+        dprime = (d1 - d0) / delta
+        t1 = t0 - d0 / dprime  # Do Newton's computation
+        if abs(t1 - t0) <= tolerance:  # Stop when the result is within the desired tolerance
+            return (
+                t1,
+                iterations,
+            )  # a solution within tolerance and maximum number of iterations
+        t0 = t1  # Update t0 to start the process again
+
+    return (None, None)

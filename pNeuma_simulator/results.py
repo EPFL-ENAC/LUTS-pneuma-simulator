@@ -4,16 +4,16 @@ import zipfile
 import numpy as np
 
 from pNeuma_simulator import params
-from pNeuma_simulator.initialization import ov
 
 
-def loader(permutation, path: str):
+def loader(permutation, path: str, verbose: bool = True):
     """
     Loads and returns the items from a JSON file within a zip archive.
 
     Args:
         permutation: The permutation to be used in the zip file name.
         path (str): The path to the directory containing the zip file.
+        verbose (bool): Specify whether to print the file name
 
     Returns:
         list: The items loaded from the JSON file.
@@ -26,11 +26,12 @@ def loader(permutation, path: str):
                 with ziph.open(filename, "r") as openfile:
                     # Reading from JSON file
                     items = json.load(openfile)
-                    print(openfile.name)
+                    if verbose:
+                        print(openfile.name)
     return items
 
 
-def aggregate(l_agents, n_cars: int, n_moto: int, d_max: float, critical: int = 3):
+def aggregate(l_agents, n_cars: int, n_moto: int):
     """
     Calculate various aggregate metrics based on the given list of agents.
 
@@ -38,79 +39,40 @@ def aggregate(l_agents, n_cars: int, n_moto: int, d_max: float, critical: int = 
         l_agents (list[Particle]): A list of agents. (#list(list(Particles))?)
         n_cars (int): The number of cars.
         n_moto (int): The number of motorcycles.
-        d_max (float): The maximum distance.
-        critical (int, optional): The critical value. Defaults to 3.
 
     Returns:
-        VKT (float): Vehicle Kilometers Traveled.
-        VHT (float): Vehicle Hours Traveled.
         VKT_cars (float): Vehicle Kilometers Traveled by cars.
         VHT_cars (float): Vehicle Hours Traveled by cars.
-        E_cars (float): Energy consumption by cars.
         VKT_moto (float): Vehicle Kilometers Traveled by motorcycles.
         VHT_moto (float): Vehicle Hours Traveled by motorcycles.
-        E_moto (float): Energy consumption by motorcycles.
-        risk (float or None): Risk value, only applicable if there are motorcycles.
     """
 
-    duration = int((len(l_agents)) * params.dt)
-    l_mean_dx = []
     l_cars_dx = []
-    l_cars_de = []
     l_moto_dx = []
-    l_moto_de = []
-    exposures = np.zeros(2 * n_cars + n_moto)
+
     for t, agents in enumerate(l_agents):
-        mean_dx = 0
         cars_dx = 0
-        cars_de = 0.0
         moto_dx = 0
-        moto_de = 0.0
-        for n, agent in enumerate(agents):
+        for agent in agents:
             dx = agent["vel"][0] * params.dt
-            lam = agent["lam"]
-            v0 = agent["v0"]
-            d = agent["d"]
-            mean_dx += dx
             if agent["mode"] == "Car":
                 cars_dx += dx
-                cars_de += dx / ov(d_max, lam, v0, d)
             else:
-                # Ignore transient
-                if t >= int(len(l_agents) * (1 - params.keep)):
-                    ttc = agent["ttc"]
-                    if ttc:
-                        if ttc < critical:
-                            exposures[n] += 1
                 moto_dx += dx
-                moto_de += dx / ov(d_max, lam, v0, d)
-        cars_de = cars_de / (2 * n_cars)
-        if n_moto > 0:
-            moto_de = moto_de / (n_moto)
         # Ignore transient
         if t >= int(len(l_agents) * (1 - params.keep)):
-            l_mean_dx.append(mean_dx)
             l_cars_dx.append(cars_dx)
-            l_cars_de.append(cars_de)
             if n_moto > 0:
                 l_moto_dx.append(moto_dx)
-                l_moto_de.append(moto_de)
-    VKT = sum(l_mean_dx) / 1000
-    VHT = (2 * n_cars + n_moto) * len(l_mean_dx) * params.dt / 3600
-    VKT_cars = sum(l_cars_dx) / 1000
-    VHT_cars = (2 * n_cars) * len(l_cars_dx) * params.dt / 3600
-    E_cars = sum(l_cars_de) / (params.keep * duration)
+    VKT_cars = 1e-3 * sum(l_cars_dx)
+    VHT_cars = 2e-3 * n_cars * len(l_cars_dx) * params.dt / params.factor
     if n_moto > 0:
-        risk = np.mean(exposures[-n_moto:] / (params.keep * len(l_agents)))
-        VKT_moto = sum(l_moto_dx) / 1000
-        VHT_moto = (n_moto) * len(l_moto_dx) * params.dt / 3600
-        E_moto = sum(l_moto_de) / (params.keep * duration)
+        VKT_moto = 1e-3 * sum(l_moto_dx)
+        VHT_moto = 1e-3 * n_moto * len(l_moto_dx) * params.dt / params.factor
     else:
-        risk = None
         VKT_moto = None
         VHT_moto = None
-        E_moto = None
-    return VKT, VHT, VKT_cars, VHT_cars, E_cars, VKT_moto, VHT_moto, E_moto, risk
+    return VKT_cars, VHT_cars, VKT_moto, VHT_moto
 
 
 def intersect(p1, p2, p3, p4):
@@ -134,18 +96,18 @@ def intersect(p1, p2, p3, p4):
     return (x, y)
 
 
-def normalized(CS, CD):
-    data = CS.get_array().data
-    contours = []
+def normalized(surface, section):
+    data = surface.get_array().data
+    curves = []
     values = []
-    for n, collection in enumerate(CS.collections):
+    for n, collection in enumerate(surface.collections):
         paths = collection.get_paths()
         if len(paths) > 0:
             for path in paths:
-                contours.append(path)
+                curves.append(path)
                 values.append(data[n])
     diagonals = []
-    for collection in CD.collections:
+    for collection in section.collections:
         path = collection.get_paths()[0]
         diagonals.append(path)
     # find intersections
@@ -158,24 +120,24 @@ def normalized(CS, CD):
         diagonal_segments = list(zip(diagonal.vertices, diagonal.vertices[1:]))
         intersecting = []
         mask = []
-        for contour in contours:
-            if diagonal.intersects_path(contour):
+        for curve in curves:
+            if diagonal.intersects_path(curve):
                 mask.append(False)
-                intersecting.append(contour)
+                intersecting.append(curve)
             else:
                 mask.append(True)
         elevations = np.array(values)[~np.array(mask)]
         for diagonal_segment in diagonal_segments:
             p1, p2 = diagonal_segment
-            for n, contour in enumerate(intersecting):
+            for n, curve in enumerate(intersecting):
                 # https://stackoverflow.com/questions/38151445/
-                contour_segments = list(zip(contour.vertices, contour.vertices[1:]))
-                for contour_segment in contour_segments:
-                    p3, p4 = contour_segment
+                curve_segments = list(zip(curve.vertices, curve.vertices[1:]))
+                for curve_segment in curve_segments:
+                    p3, p4 = curve_segment
                     intersection = intersect(p1, p2, p3, p4)
                     if intersection:
                         points.append(intersection)
                         response.append(elevations[n])
         l_points.append(points)
         l_response.append(response)
-    return contours, l_points, l_response
+    return l_points, l_response

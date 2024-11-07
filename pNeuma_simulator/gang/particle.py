@@ -20,7 +20,6 @@ class Particle:
         self.a0 = 0
         self.ttc = None
         self.f_a = None
-        self.alphas = None
         self.image = None
         self.leader = None
         self.rad = None
@@ -34,19 +33,15 @@ class Particle:
         self.theta = atan2(vy, vx)
         self.interactions = []
         if self.mode == "Car":
-            self.l = 2.2  # half length
-            self.w = 0.9  # half width
-            self.a = 0.15326290995077607  # noise amplitude
-            self.b = 3.379556325218917  # relaxation time
-            self.p = 8.0
-            self.q = 0.5
+            self.l = 2.20  # half length
+            self.w = 0.90  # half width
+            self.a = 0.17  # noise amplitude
+            self.b = 3.50  # relaxation time
         else:
-            self.l = 0.8  # half length
-            self.w = 0.3  # half width
-            self.a = 0.24670423672446218  # noise amplitude
-            self.b = 1.30430934999647  # relaxation time
-            self.p = 2.0
-            self.q = 2.0
+            self.l = 0.80  # half length
+            self.w = 0.30  # half width
+            self.a = 0.25  # noise amplitude
+            self.b = 1.30  # relaxation time
         self.styles = styles
         if not self.styles:
             # Default ellipse styles
@@ -104,14 +99,21 @@ class Particle:
             self.pos[0] -= params.L
 
     def encode(self):
-        return self.__dict__
+        my_dict = self.__dict__
+        my_dict.pop("image", None)
+        my_dict.pop("rad", None)
+        my_dict.pop("l", None)
+        my_dict.pop("w", None)
+        my_dict.pop("a", None)
+        my_dict.pop("b", None)
+        my_dict.pop("styles", None)
+        return my_dict
 
     def __deepcopy__(self, memodict={}):
         # https://stackoverflow.com/questions/24756712
         copy_object = Particle(self.x, self.y, self.vx, self.vy, self.mode, self.ID, self.styles)
         copy_object.interactions = self.interactions
         copy_object.leader = self.leader
-        copy_object.alphas = self.alphas
         copy_object.a_des = self.a_des
         copy_object.ttc = self.ttc
         copy_object.f_a = self.f_a

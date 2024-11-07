@@ -16,7 +16,7 @@ def navigate(ego: Particle, agents: list[Particle], integer: int, d_max) -> tupl
         ego (Particle): ego vehicle to be updated
         agents (list): list of agents in the simulation
         integer (int): random seed
-        d_max (float, optional): horizon distance.
+        d_max (float): horizon distance.
 
     Returns:
         tuple: target and desired directions in radians,
@@ -44,11 +44,11 @@ def navigate(ego: Particle, agents: list[Particle], integer: int, d_max) -> tupl
         a0, a_des = target(alphas, f_a, d_max, rng)
     else:
         a0, a_des = 0, 0
-        alphas, f_a = None, None
+        f_a = None
     # actual time to collision
     ttc = collisions(ego, np.linalg.norm(ego.vel), ego.theta, neighbors)
     # store the result
-    return (a0, a_des, alphas, f_a, ttc)
+    return (a0, a_des, f_a, ttc)
 
 
 def egress(alphas, indices, counts, cond, rng) -> float:
@@ -141,8 +141,7 @@ def decay(vel: float, theta: float) -> np.ndarray:
         alphas (numpy.ndarray): An array of decay angles.
     """
 
-    param = {"const": 4.026397, "x1": -0.062306}
-    phi_max = int(np.exp(param["x1"] * norm(vel) * params.factor + param["const"]))
+    phi_max = int(np.exp(params.XM * norm(vel) * params.factor + params.CM))
     # half degree resolution
     phi_range = np.linspace(phi_max, -phi_max, 4 * phi_max + 1)
     alphas = np.radians(phi_range) - theta

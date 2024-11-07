@@ -31,29 +31,29 @@ def synthetic_fd(n_veh: int, random_state, mode: str = "Car", distributed: bool 
     marginal_dists = [
         distributions.fisk,
         distributions.lognorm,
-        distributions.weibull_min,
+        distributions.mielke,
     ]
     if mode == "Car":
         args = [
-            (4.751065953663232, 0, 1.257554949836412),
-            (0.2206026972757819, 0, 29.814414236513073),
-            (2.002603415738683, 0, 1.4203922933206412),
+            (4.60, 0, 1.30),
+            (0.20, 0, 29.0),
+            (1.30, 5.80, 0, 2.10),
         ]
         bounds = [
-            (0.6968633413268207, 2.4866413425909792),
-            (20.825241115718224, 43.3883779433966),
-            (0.19690785189237897, 2.321541307355339),
+            (0.80, 3.50),
+            (22.1, 47.6),
+            (0.40, 3.60),
         ]
     else:
         args = [
-            (3.0162661900328684, 0, 2.1577514618921123),
-            (0.27640817683206864, 0, 31.783886290615683),
-            (1.2934090505801255, 0, 1.3335939613574372),
+            (2.40, 0, 2.80),
+            (0.30, 0, 33.1),
+            (0.90, 2.50, 0, 2.20),
         ]
         bounds = [
-            (1.038156373262415, 5.734572922682492),
-            (20.601924472034902, 47.33181402666869),
-            (0.13632279926915733, 3.2677733493753554),
+            (1.10, 7.00),
+            (23.9, 46.0),
+            (0.20, 3.40),
         ]
     for r, marginal_dist in enumerate(marginal_dists):
         marginal = marginal_dist(*args[r])
@@ -65,8 +65,12 @@ def synthetic_fd(n_veh: int, random_state, mode: str = "Car", distributed: bool 
             size = n_veh
             dist = marginal_dists[i]
             x_min, x_max = bounds[i]
-            c, loc, scale = args[i]
-            values = truncated_rvs(rng, size, dist, x_min, x_max, c, loc, scale)
+            if len(args[i]) == 3:
+                s, loc, scale = args[i]
+                k = None
+            else:
+                k, s, loc, scale = args[i]
+            values = truncated_rvs(rng, size, dist, x_min, x_max, k, s, loc, scale)
             synthetic_data.append(values)
         # slope at jam spacing s^-1
         lam = synthetic_data[0]
@@ -133,6 +137,6 @@ def equilibrium(L: float, lanes: int, n_cars: int, n_moto: int, rng: object, dis
             prefactor = 1 + np.cos(2 * np.pi / n_veh)
             tau = 1 / (prefactor * f_eq)
             if all(np.isfinite(tau)):
-                tau = np.minimum(tau, 2 / lam)
+                tau = np.minimum(tau, 1 / lam)
                 break
     return (tau, lam, v0, d)

@@ -58,10 +58,10 @@ def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 5
         rng,
         distributed=distributed,
     )
-    l_b = []
     l_a = []
-    l_q = []
-    l_p = []
+    l_b = []
+    l_A = np.repeat(params.A, len(agents))
+    l_B = np.repeat(params.B, len(agents))
     for n, agent in enumerate(agents):
         # Reassign IDs
         agent.ID = n + 1
@@ -71,10 +71,8 @@ def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 5
         agent.lam = lam[n]
         agent.v0 = v0[n]
         agent.d = d[n]
-        l_b.append(agent.b)
         l_a.append(agent.a)
-        l_q.append(agent.q)
-        l_p.append(agent.p)
+        l_b.append(agent.b)
     for t in range(COUNT - 1):
         ######################
         # Periodic boundary
@@ -84,13 +82,11 @@ def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 5
         for agent in agents:
             if agent.x < -(params.L / 2 - (params.d_max + agent.l)):
                 image = deepcopy(agent)
-                image.styles = {"ec": "k", "fill": False, "ls": "--"}
                 image.x += params.L
                 images.append(image)
                 agent.image = image
             elif agent.x > params.L / 2 - (params.d_max + agent.l):
                 image = deepcopy(agent)
-                image.styles = {"ec": "k", "fill": False, "ls": "--"}
                 image.x -= params.L
                 images.append(image)
                 agent.image = image
@@ -144,12 +140,11 @@ def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 5
                 for integer, navigator in zip(integers, navigators)
             )
             for n, agent in enumerate(navigators):
-                a0, a_des, alphas, f_a, ttc = tuples[n]
+                a0, a_des, f_a, ttc = tuples[n]
                 agent.ttc = ttc
                 if agent.mode == "Moto":
                     agent.a0 = a0
                     agent.a_des = a_des
-                    agent.alphas = alphas.tolist()
                     agent.f_a = f_a.tolist()
         ################################
         # Longitudinal dynamics
@@ -166,7 +161,6 @@ def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 5
                 theta_i = new_theta
             else:
                 theta_i = agent.theta
-            # horizon = d_max
             l_theta.append(theta_i)
             # Semiaxis dimensions of i
             l_i, w_i = agent.l, agent.w
@@ -255,7 +249,7 @@ def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 5
         E[t + 1] = (1 - params.dt / np.array(l_b)) * E[t] + np.array(l_a) * dW
         V = norm(l_vel, axis=1)
         OV = ov(np.array(l_gap), lam, v0, d) + E[t + 1]
-        V_des = OV * (0.5 * (1 + np.tanh(np.array(l_p) * (np.array(l_pseudottc) + np.array(l_q)))))
+        V_des = OV * (0.5 * (1 + np.tanh(l_A * (np.array(l_pseudottc) + l_B))))
         new_V = V + ((V_des - V) / tau) * params.dt
         new_V = np.maximum(new_V, 0)
         new_theta = np.array(l_theta)

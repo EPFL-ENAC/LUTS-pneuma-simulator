@@ -101,7 +101,8 @@ def truncated_rvs(
     dist,
     x_min: float,
     x_max: float,
-    c: float,
+    k,
+    s: float,
     loc: float,
     scale: float,
 ):
@@ -114,7 +115,8 @@ def truncated_rvs(
         dist (object): Probability distribution object.
         x_min (float): Minimum value for truncation.
         x_max (float): Maximum value for truncation.
-        c (float): Shape parameter for the distribution.
+        k (float): First shape parameter for the distribution.
+        s (float): Second shape parameter for the distribution.
         loc (float): Location parameter for the distribution.
         scale (float): Scale parameter for the distribution.
 
@@ -122,12 +124,24 @@ def truncated_rvs(
         numpy.ndarray: Array of truncated random variables.
     """
     # https://stackoverflow.com/questions/47933019
-    low = dist.cdf(x_min, c, loc=loc, scale=scale)
-    high = dist.cdf(x_max, c, loc=loc, scale=scale)
+    if k:
+        low = dist.cdf(x_min, k, s, loc=loc, scale=scale)
+        high = dist.cdf(x_max, k, s, loc=loc, scale=scale)
 
-    return dist.ppf(
-        rng.uniform(low=low, high=high, size=size),
-        c,
-        loc=0,
-        scale=scale,
-    )
+        return dist.ppf(
+            rng.uniform(low=low, high=high, size=size),
+            k,
+            s,
+            loc=0,
+            scale=scale,
+        )
+    else:
+        low = dist.cdf(x_min, s, loc=loc, scale=scale)
+        high = dist.cdf(x_max, s, loc=loc, scale=scale)
+
+        return dist.ppf(
+            rng.uniform(low=low, high=high, size=size),
+            s,
+            loc=0,
+            scale=scale,
+        )
