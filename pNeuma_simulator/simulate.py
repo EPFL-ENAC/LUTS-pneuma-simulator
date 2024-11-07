@@ -9,12 +9,10 @@ from numpy.linalg import norm
 
 from pNeuma_simulator import params
 from pNeuma_simulator.contact_distance import ellipses
-from pNeuma_simulator.gang import navigate
-from pNeuma_simulator.gang.neighborhood import neighborhood
+from pNeuma_simulator.gang import navigate, neighborhood
 from pNeuma_simulator.identify import identify
 from pNeuma_simulator.infront import infront
-from pNeuma_simulator.initialization import equilibrium, ov
-from pNeuma_simulator.initialization.poissondisc import PoissonDisc
+from pNeuma_simulator.initialization import PoissonDisc, equilibrium, ov
 from pNeuma_simulator.shadowcasting import shadowcasting
 from pNeuma_simulator.utils import direction, projection, tangent_dist
 

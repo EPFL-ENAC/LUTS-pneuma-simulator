@@ -4,9 +4,7 @@ from numpy import where
 from numpy.linalg import norm
 
 from pNeuma_simulator import params
-from pNeuma_simulator.gang import collisions
-from pNeuma_simulator.gang.neighborhood import neighborhood
-from pNeuma_simulator.gang.particle import Particle
+from pNeuma_simulator.gang import Particle, collisions, neighborhood
 
 
 def navigate(ego: Particle, agents: list[Particle], integer: int, d_max) -> tuple:
