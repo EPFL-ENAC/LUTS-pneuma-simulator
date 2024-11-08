@@ -1,4 +1,5 @@
 from copy import deepcopy
+from typing import List
 
 import numpy as np
 
@@ -8,6 +9,30 @@ from pNeuma_simulator.gang.particle import Particle
 
 
 class PoissonDisc:
+    """A class for generating Poisson-disc sampled points.
+
+    This class implements the Poisson-disc sampling algorithm to generate
+    points that are evenly distributed within a specified area. It is adapted
+    from the implementation available at https://scipython.com/blog/poisson-disc-sampling-in-python.
+
+    Attributes:
+        L (int): The length of the sampling area.
+        W (float): The width of the sampling area.
+        n_cars (int): The number of cars to be sampled.
+        n_moto (int): The number of motorcycles to be sampled.
+        cell (float): The side length of each cell in the grid.
+        nx (int): The number of cells in the x-direction of the grid.
+        ny (int): The number of cells in the y-direction of the grid.
+        width (float): The width of the grid.
+        height (float): The height of the grid.
+        x_boundaries (numpy.ndarray): The x-coordinates of the cell boundaries.
+        y_boundaries (numpy.ndarray): The y-coordinates of the cell boundaries.
+        k (int): The number of candidate points to consider around each reference point.
+        aspect (float): The aspect ratio of the ellipses.
+        clearance (float): The clearance distance between points.
+        rng (numpy.random.Generator): The random number generator.
+    """
+
     # Adapted from https://scipython.com/blog/poisson-disc-sampling-in-python
     def __init__(
         self,
@@ -21,6 +46,19 @@ class PoissonDisc:
         clearance: float = 0.25,
         rng=None,
     ):
+        """Initialize the PoissonDisc sampler with the given parameters.
+
+        Args:
+            n_cars (int): The number of cars to be sampled.
+            n_moto (int): The number of motorcycles to be sampled.
+            cell (float, optional): The side length of each cell in the grid. Defaults to 2.25.
+            L (int, optional): The length of the sampling area. Defaults to 180.
+            W (float, optional): The width of the sampling area. Defaults to 7.2.
+            k (int, optional): The number of candidate points to consider around each reference point. Defaults to 30.
+            aspect (float, optional): The aspect ratio of the ellipses. Defaults to 2.5.
+            clearance (float, optional): The clearance distance between points. Defaults to 0.25.
+            rng (numpy.random.Generator, optional): The random number generator. Defaults to None.
+        """
         self.L, self.W = L, W
         self.n_cars = n_cars
         self.n_moto = n_moto
@@ -54,8 +92,15 @@ class PoissonDisc:
         # http://devmag.org.za/2009/05/03/poisson-disk-sampling/
         self.cells = {coords: [] for coords in coords_list}
 
-    def get_cell_coords(self, pt):
-        """Get the coordinates of the cell that pt = (x,y) falls in."""
+    def get_cell_coords(self, pt: Particle):
+        """Get the coordinates of the cell that pt = (x,y) falls in.
+
+        Args:
+            pt (Particle): A Particle object
+
+        Returns:
+            tuple: A tuple (x, y) representing the coordinates of the cell.
+        """
         # https://stackoverflow.com/questions/51333744
         x = np.digitize(pt.x, self.x_boundaries) - 1
         y = np.digitize(pt.y, self.y_boundaries) - 1
@@ -71,6 +116,9 @@ class PoissonDisc:
                                         ooooo
                                         ooXoo
                                         ooooo
+
+        Args:
+            pt (tuple): A tuple (x, y) representing the coordinates of the cell.
 
         """
 
@@ -106,7 +154,7 @@ class PoissonDisc:
                     neighbours.append(neighbour_cell)
         return neighbours
 
-    def point_valid(self, pt):
+    def is_valid(self, pt: Particle):
         """Is pt a valid point to emit as a sample?
 
         It must be no closer than r from any other point: check the cells in its
@@ -185,7 +233,7 @@ class PoissonDisc:
         # All points tested: if we're here, pt is valid
         return True
 
-    def get_point(self, ref_pt):
+    def get_point(self, ref_pt: Particle):
         """Try to find a candidate point relative to ref_pt to emit in the sample.
 
         We draw up to k points from the annulus of inner radius r, outer radius 2r
@@ -213,13 +261,13 @@ class PoissonDisc:
             ):
                 # This point falls outside the domain, so try again.
                 continue
-            if self.point_valid(pt):
+            if self.is_valid(pt):
                 return pt
             i += 1
         # We failed to find a suitable point in the vicinity of refpt.
         return False
 
-    def sample(self, rng):
+    def sample(self, rng: np.random.Generator):
         """Poisson disc random sampling in 2D.
 
         Draw random samples on the domain width x height such that no two
@@ -229,8 +277,8 @@ class PoissonDisc:
 
         """
 
-        self.samples = []
-        self.images = []
+        self.samples: List[Particle] = []
+        self.images: List[Particle] = []
         active = []
         # Generate car instances in lanes.
         X = np.arange(start=-self.width / 2, stop=self.width / 2, step=self.width / self.n_cars)
