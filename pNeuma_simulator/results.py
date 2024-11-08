@@ -11,8 +11,7 @@ from pNeuma_simulator.initialization import ov
 
 
 def loader(permutation, path: str, verbose: bool = True):
-    """
-    Loads and returns the items from a JSON file within a zip archive.
+    """Loads and returns the items from a JSON file within a zip archive.
 
     Args:
         permutation: The permutation to be used in the zip file name.
@@ -36,8 +35,7 @@ def loader(permutation, path: str, verbose: bool = True):
 
 
 def aggregate(l_agents, n_cars: int, n_moto: int):
-    """
-    Calculate various aggregate metrics based on the given list of agents.
+    """Calculate various aggregate metrics based on the given list of agents.
 
     Args:
         l_agents (list[Particle]): A list of agents. (#list(list(Particles))?)
@@ -148,21 +146,20 @@ def normalized(surface, section):
 
 
 def percolate(items, n_moto, start: int = 1):
-    """
-    Analyzes the percolation of vehicles and motorcycles in a given dataset.
+    """Analyzes the percolation of vehicles and motorcycles in a given dataset.
 
-    Parameters:
-    items (list): A list of items where each item is a list of frames. Each frame is a dictionary containing vehicle
-        data.
-    n_moto (int): The number of motorcycles in the dataset.
-    start (int, optional): The starting frame index to consider for analysis. Defaults to 1.
+    Args:
+        items (list): A list of items where each item is a list of frames. Each frame is a dictionary containing vehicle
+            data.
+        n_moto (int): The number of motorcycles in the dataset.
+        start (int, optional): The starting frame index to consider for analysis. Defaults to 1.
 
     Returns:
-    tuple: A tuple containing four lists:
-        - x (list): The bin centers for the binned data.
-        - y (list): The mean difference in velocity between motorcycles and cars for each bin.
-        - low (list): The lower bound of the confidence interval for each bin.
-        - high (list): The upper bound of the confidence interval for each bin.
+        tuple: A tuple containing four lists:
+            - x (list): The bin centers for the binned data.
+            - y (list): The mean difference in velocity between motorcycles and cars for each bin.
+            - low (list): The lower bound of the confidence interval for each bin.
+            - high (list): The upper bound of the confidence interval for each bin.
     """
     l_T = []
     l_DPhi = []
@@ -203,8 +200,7 @@ def percolate(items, n_moto, start: int = 1):
 
 
 def zipdir(path: str, ziph) -> None:
-    """
-    Zip the directory at the given path.
+    """Zip the directory at the given path.
 
     Args:
         path (str): The path of the directory to be zipped.
@@ -224,20 +220,19 @@ def zipdir(path: str, ziph) -> None:
 
 
 def confidence_interval(data, rng, setting="sem"):
-    """
-    Calculate the confidence interval or standard error of the mean (SEM) for a given dataset.
+    """Calculate the confidence interval or standard error of the mean (SEM) for a given dataset.
 
-    Parameters:
-    data (array-like): The dataset for which the confidence interval or SEM is to be calculated.
-    rng (numpy.random.Generator): A random number generator instance for reproducibility.
-    setting (str, optional): The type of result to return. Options are:
-        - "low": Return the lower bound of the confidence interval.
-        - "high": Return the upper bound of the confidence interval.
-        - "sem": Return the standard error of the mean (default).
+    Args:
+        data (array-like): The dataset for which the confidence interval or SEM is to be calculated.
+        rng (numpy.random.Generator): A random number generator instance for reproducibility.
+        setting (str, optional): The type of result to return. Options are:
+            - "low": Return the lower bound of the confidence interval.
+            - "high": Return the upper bound of the confidence interval.
+            - "sem": Return the standard error of the mean (default).
 
     Returns:
-    float or None: The requested confidence interval bound or SEM if the dataset has more than one element, otherwise
-    None.
+        float or None: The requested confidence interval bound or SEM if the dataset has more than one element,
+        otherwise None.
     """
     if len(data) > 1:
         # https://github.com/scipy/scipy/issues/14645

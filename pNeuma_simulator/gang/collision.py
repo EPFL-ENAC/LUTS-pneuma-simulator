@@ -117,8 +117,9 @@ def newton_iteration(
     Returns:
         tuple: A tuple containing:
             - float: Time-to-collision value within the desired tolerance and maximum number of iterations, or None if
-            no solution is found.
+                no solution is found.
             - int: Number of iterations performed, or None if no solution is found.
+
     """
     t0 = 0
     for iterations in range(max_iterations):
