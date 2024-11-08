@@ -5,7 +5,31 @@ from pNeuma_simulator import params
 
 
 class Particle:
-    """A class representing a two-dimensional particle."""
+    """A class representing a two-dimensional particle.
+
+    This class models a particle with position, velocity, and other attributes
+    relevant to its motion and interactions.
+
+    Attributes:
+        ID (int): The unique identifier of the particle.
+        mode (str): The mode of the particle, e.g., "Car" or "Moto".
+        a_des (float): The desired acceleration.
+        a0 (float): The initial acceleration.
+        ttc (float): Time to collision.
+        f_a (float): Distance to collision.
+        image (object): The visual representation of the particle.
+        leader (Particle): The leading particle.
+        rad (float): The radius of the particle.
+        gap (float): The gap between particles.
+        tau (float): Adaptation time.
+        lam (float): Lambda parameter.
+        v0 (float): Initial velocity.
+        d (float): Distance parameter.
+        pos (numpy.ndarray): The position of the particle.
+        vel (numpy.ndarray): The velocity of the particle.
+        theta (float): The angle of the particle's velocity.
+        interactions (list): List of interactions with other particles.
+    """
 
     def __init__(self, x, y, vx, vy, mode="Car", ID=None, styles=None):
         """Initialize the particle's position, velocity, mode and ID.
@@ -13,6 +37,14 @@ class Particle:
         Any key-value pairs passed in the styles dictionary will be passed
         as arguments to Matplotlib's Ellipse patch constructor.
 
+        Args:
+            x (float): The x-coordinate of the particle's position.
+            y (float): The y-coordinate of the particle's position.
+            vx (float): The x-component of the particle's velocity.
+            vy (float): The y-component of the particle's velocity.
+            mode (str, optional): The mode of the particle. Defaults to "Car".
+            ID (int, optional): The unique identifier of the particle. Defaults to None.
+            styles (dict, optional): A dictionary of styles for Matplotlib's Ellipse patch. Defaults to None.
         """
         self.ID = ID
         self.mode = mode
