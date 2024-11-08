@@ -10,8 +10,7 @@ pNeuma-simulator documentation
     :maxdepth: 2
     :caption: Contents:
 
-    auto_source/pNeuma_simulator/modules
-    auto_source/pNeuma_simulator/pNeuma_simulator
+    API Reference <auto_source/pNeuma_simulator/modules.rst>
 
 
 Indices and tables
