@@ -33,15 +33,15 @@ class Particle:
         self.theta = atan2(vy, vx)
         self.interactions = []
         if self.mode == "Car":
-            self.l = 2.20  # half length
-            self.w = 0.90  # half width
-            self.a = 0.17  # noise amplitude
-            self.b = 3.50  # relaxation time
+            self.l = params.car_l  # half length
+            self.w = params.car_w  # half width
+            self.a = params.car_a  # noise amplitude
+            self.b = params.car_b  # relaxation time
         else:
-            self.l = 0.80  # half length
-            self.w = 0.30  # half width
-            self.a = 0.25  # noise amplitude
-            self.b = 1.30  # relaxation time
+            self.l = params.moto_l  # half length
+            self.w = params.moto_w  # half width
+            self.a = params.moto_a  # noise amplitude
+            self.b = params.moto_b  # relaxation time
         self.styles = styles
         if not self.styles:
             # Default ellipse styles

@@ -38,3 +38,13 @@ shape = yv.shape
 
 # Results parameters
 keep = 1 / 3
+
+car_l = 2.20
+car_w = 0.90
+car_a = 0.17
+car_b = 3.50
+
+moto_l = 0.80
+moto_w = 0.30
+moto_a = 0.25
+moto_b = 1.30
