@@ -1,9 +1,13 @@
 import json
+import os
 import zipfile
 
 import numpy as np
+from scipy.stats import binned_statistic
 
 from pNeuma_simulator import params
+from pNeuma_simulator.gang import decay
+from pNeuma_simulator.initialization import ov
 
 
 def loader(permutation, path: str, verbose: bool = True):
@@ -141,3 +145,115 @@ def normalized(surface, section):
         l_points.append(points)
         l_response.append(response)
     return l_points, l_response
+
+
+def percolate(items, n_moto, start: int = 1):
+    """
+    Analyzes the percolation of vehicles and motorcycles in a given dataset.
+
+    Parameters:
+    items (list): A list of items where each item is a list of frames. Each frame is a dictionary containing vehicle
+        data.
+    n_moto (int): The number of motorcycles in the dataset.
+    start (int, optional): The starting frame index to consider for analysis. Defaults to 1.
+
+    Returns:
+    tuple: A tuple containing four lists:
+        - x (list): The bin centers for the binned data.
+        - y (list): The mean difference in velocity between motorcycles and cars for each bin.
+        - low (list): The lower bound of the confidence interval for each bin.
+        - high (list): The upper bound of the confidence interval for each bin.
+    """
+    l_T = []
+    l_DPhi = []
+    for item in items:
+        if isinstance(item[0], list):
+            for t, frame in enumerate(item[0]):
+                if t > start:
+                    deg_range = []
+                    vel_car = []
+                    vel_x = []
+                    vel_y = []
+                    for j, _ in enumerate(frame):
+                        vel = frame[j]["vel"]
+                        v0 = frame[j]["v0"]
+                        lam = frame[j]["lam"]
+                        d = frame[j]["d"]
+                        v_max = ov(params.d_max, lam, v0, d)
+                        if frame[j]["mode"] == "Car":
+                            vel_car.append(vel[0] / v_max)
+                        else:
+                            alphas = decay(np.array(vel), frame[j]["theta"])
+                            degs = np.degrees(alphas)
+                            deg_range.append(degs[0] - degs[-1])
+                            vel_x.append(vel[0] / v_max)
+                            vel_y.append(vel[1] / v_max)
+                    l_T.append(np.mean(deg_range))
+                    phi_cars = np.mean(vel_car)
+                    phi_moto = np.norm([np.sum(vel_x), np.sum(vel_y)]) / n_moto
+                    l_DPhi.append(phi_moto - phi_cars)
+    l_T = np.round(l_T) / 2
+    bins = np.sort(np.unique(l_T))
+    y, bin_edges, _ = binned_statistic(l_T, l_DPhi, statistic="mean", bins=bins)
+    x = (bin_edges[1:] + bin_edges[:-1]) / 2
+    low, _, _ = binned_statistic(l_T, l_DPhi, statistic=lambda y: confidence_interval(y, "low"), bins=bins)
+    high, _, _ = binned_statistic(l_T, l_DPhi, statistic=lambda y: confidence_interval(y, "high"), bins=bins)
+
+    return list(x), list(y), list(low), list(high)
+
+
+def zipdir(path: str, ziph) -> None:
+    """
+    Zip the directory at the given path.
+
+    Args:
+        path (str): The path of the directory to be zipped.
+        ziph: The zipfile handle.
+    """
+    # ziph is zipfile handle
+    # https://stackoverflow.com/questions/1855095/
+    # https://stackoverflow.com/questions/36740683/
+    for root, _, files in os.walk(path):
+        for file in files:
+            if file.endswith(").json"):
+                os.chdir(root)
+                ziph.write(file)
+                os.remove(file)
+                path_parent = os.path.dirname(os.getcwd())
+                os.chdir(path_parent)
+
+
+def confidence_interval(data, rng, setting="sem"):
+    """
+    Calculate the confidence interval or standard error of the mean (SEM) for a given dataset.
+
+    Parameters:
+    data (array-like): The dataset for which the confidence interval or SEM is to be calculated.
+    rng (numpy.random.Generator): A random number generator instance for reproducibility.
+    setting (str, optional): The type of result to return. Options are:
+        - "low": Return the lower bound of the confidence interval.
+        - "high": Return the upper bound of the confidence interval.
+        - "sem": Return the standard error of the mean (default).
+
+    Returns:
+    float or None: The requested confidence interval bound or SEM if the dataset has more than one element, otherwise
+    None.
+    """
+    if len(data) > 1:
+        # https://github.com/scipy/scipy/issues/14645
+        res = np.bootstrap(
+            (data,),
+            np.mean,
+            batch=10,
+            confidence_level=0.95,
+            random_state=rng,
+            method="basic",
+        )
+        if setting == "low":
+            return res.confidence_interval.low
+        elif setting == "high":
+            return res.confidence_interval.high
+        elif setting == "sem":
+            return res.standard_error
+    else:
+        return None

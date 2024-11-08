@@ -1,10 +1,8 @@
+from . import animations, results, simulate
 from .animations import draw, ring  # noqa F401
-from .confidence_interval import confidence_interval  # noqa F401
-from .identify import identify  # noqa F401
-from .infront import infront  # noqa F401
-from .percolate import percolate  # noqa F401
-from .results import loader, aggregate, intersect, normalized  # noqa F401
-from .simulate import main, batch, CollisionException  # noqa F401
-from .zipdir import zipdir  # noqa F401
+from .results import aggregate, intersect, loader, normalized  # noqa F401
+from .simulate import CollisionException, batch, main  # noqa F401
+
+__all__ = ["animations", "ring", "results", "simulate", "batch"]
 
 __version__ = "0.0.0"

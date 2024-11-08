@@ -5,14 +5,13 @@ from typing import Callable
 
 import numpy as np
 from joblib import Parallel, delayed
+from numba import jit
 from numpy.linalg import norm
 
 from pNeuma_simulator import params
 from pNeuma_simulator.contact_distance import ellipses
 from pNeuma_simulator.gang import navigate
 from pNeuma_simulator.gang.neighborhood import neighborhood
-from pNeuma_simulator.identify import identify
-from pNeuma_simulator.infront import infront
 from pNeuma_simulator.initialization import PoissonDisc, equilibrium, ov
 from pNeuma_simulator.shadowcasting import shadowcasting
 from pNeuma_simulator.utils import direction, projection, tangent_dist
@@ -294,3 +293,49 @@ class CollisionException(Exception):
 
     def __str__(self):
         return str(self.message)
+
+
+@jit(nopython=True)
+def identify(matrix: np.ndarray, image_rad: np.ndarray, ID: int) -> np.ndarray:
+    """
+    Identifies and replaces pixels in the matrix with the given ID based on a condition.
+
+    Args:
+        matrix (ndarray): The input matrix.
+        image_rad (ndarray): The flattened array of image radii.
+        ID (int): The ID to replace the pixels with.
+
+    Returns:
+        ndarray: The modified matrix with replaced pixels.
+    """
+    # matrix to array
+    ar_matrix = matrix.flatten()
+    ar_rad = image_rad.flatten()
+    ar_matrix[np.where(ar_rad < 1)] = ID
+    matrix = ar_matrix.reshape(matrix.shape)
+    return matrix
+
+
+@jit(nopython=True)
+def infront(e_i, pos_i, pos_j):
+    """
+    Determines if a neighbor is in front of a given position.
+
+    Args:
+        e_i: The direction vector of the current position.
+        pos_i: The current position.
+        pos_j: The position of the neighbor.
+
+    Returns:
+        front: A boolean indicating if the neighbor is in front of the current position.
+        e_i_j: The unit vector from the current position to the neighbor.
+        s_i_j: The distance from the current position to the neighbor.
+    """
+
+    # Distance from i to j
+    s_i_j = norm(pos_j - pos_i)
+    # Unit vector from i to j
+    e_i_j = (pos_j - pos_i) / s_i_j
+    # Check if neighbor is in front
+    front = np.dot(e_i, e_i_j) > 0
+    return front, e_i_j, s_i_j
