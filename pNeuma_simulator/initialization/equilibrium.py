@@ -25,7 +25,7 @@ def synthetic_fd(n_veh: int, random_state, mode: str = "Car", distributed: bool 
             - numpy.ndarray: Array of desired speeds.
             - numpy.ndarray: Array of jam spacings.
     """
-    factor = 3.6
+    factor = params.factor
     lam, v0, d = 0, 0, 0
     marginals = []
     marginal_dists = [
@@ -34,27 +34,11 @@ def synthetic_fd(n_veh: int, random_state, mode: str = "Car", distributed: bool 
         distributions.mielke,
     ]
     if mode == "Car":
-        args = [
-            (4.60, 0, 1.30),
-            (0.20, 0, 29.0),
-            (1.30, 5.80, 0, 2.10),
-        ]
-        bounds = [
-            (0.80, 3.50),
-            (22.1, 47.6),
-            (0.40, 3.60),
-        ]
+        args = params.car_args
+        bounds = params.car_bounds
     else:
-        args = [
-            (2.40, 0, 2.80),
-            (0.30, 0, 33.1),
-            (0.90, 2.50, 0, 2.20),
-        ]
-        bounds = [
-            (1.10, 7.00),
-            (23.9, 46.0),
-            (0.20, 3.40),
-        ]
+        args = params.moto_args
+        bounds = params.moto_bounds
     for r, marginal_dist in enumerate(marginal_dists):
         marginal = marginal_dist(*args[r])
         marginals.append(marginal)
