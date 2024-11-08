@@ -1,1 +1,1 @@
-from .utils import direction, projection, radial, tangent_dist, truncated_rvs  # noqa F401
+from .utils import direction, projection, tangent_dist, truncated_rvs  # noqa F401
