@@ -4,7 +4,7 @@ from numpy import arange, degrees
 from numpy.linalg import norm
 
 from pNeuma_simulator import params
-from pNeuma_simulator.gang.particle import Particle
+from pNeuma_simulator.gang import Particle
 
 
 def draw(particle: Particle, ax: mpl_axes.Axes) -> None:
