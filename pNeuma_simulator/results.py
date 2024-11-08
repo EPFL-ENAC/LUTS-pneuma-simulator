@@ -78,6 +78,23 @@ def aggregate(l_agents, n_cars: int, n_moto: int):
 
 
 def intersect(p1, p2, p3, p4):
+    """Calculates the intersection point of two line segments.
+
+    This function calculates the intersection point of the line segment
+    defined by points p1 and p2 with the line segment defined by points p3
+    and p4. If the line segments are parallel or do not intersect within
+    their lengths, the function returns None.
+
+    Args:
+        p1 (tuple): The first point of the first line segment, as a tuple (x1, y1).
+        p2 (tuple): The second point of the first line segment, as a tuple (x2, y2).
+        p3 (tuple): The first point of the second line segment, as a tuple (x3, y3).
+        p4 (tuple): The second point of the second line segment, as a tuple (x4, y4).
+
+    Returns:
+        tuple or None: The intersection point as a tuple (x, y) if the line
+        segments intersect within their lengths, otherwise None.
+    """
     # intersection between line(p1, p2) and line(p3, p4)
     # https://stackoverflow.com/questions/3252194/
     x1, y1 = p1
@@ -99,6 +116,22 @@ def intersect(p1, p2, p3, p4):
 
 
 def normalized(surface, section):
+    """Calculate normalized intersection points and values between surface curves and section diagonals.
+
+    Calculate the normalized intersection points and their corresponding values between the curves of a surface and the
+    diagonals of a section.
+
+    Args:
+        surface (object): An object representing the surface, which contains collections of curves and an
+            array of data values.
+        section (object): An object representing the section, which contains collections of diagonals.
+
+    Returns:
+        tuple: A tuple containing two lists:
+            - l_points (list): A list of lists, where each sublist contains the intersection points for each diagonal.
+            - l_response (list): A list of lists, where each sublist contains the corresponding values at the
+                intersection points for each diagonal.
+    """
     data = surface.get_array().data
     curves = []
     values = []
@@ -149,8 +182,8 @@ def percolate(items, n_moto, start: int = 1):
     """Analyzes the percolation of vehicles and motorcycles in a given dataset.
 
     Args:
-        items (list): A list of items where each item is a list of frames. Each frame is a dictionary containing vehicle
-            data.
+        items (list): A list of items where each item is a list of frames. Each frame is a dictionary
+            containing vehicle data.
         n_moto (int): The number of motorcycles in the dataset.
         start (int, optional): The starting frame index to consider for analysis. Defaults to 1.
 
