@@ -3,6 +3,8 @@
 
 # pNeuma-simulator
 
+The pNeuma-simulator is a Python-based tool for simulating multispecies urban traffic flow dynamics. It aims to provide an open-source, reproducible, and FAIR framework for traffic engineers and researchers in physics to analyze urban mobility scenarios.
+
 ## Installation
 
 First, clone the repository. Then, install the package using
@@ -11,7 +13,7 @@ First, clone the repository. Then, install the package using
 $ pip install -e .[dev]
 ```
 
-If installing the package on macOS, replace `.[dev]` by `'.[dev]'`
+For macOS users, replace `.[dev]` by `'.[dev]'`
 
 ## Usage
 
@@ -19,8 +21,8 @@ The refactored `pNEUMA-simulator.ipynb`, using the modular structure of the pack
 
 ## Building the docs
 
-Currently, the documentation can only be created locally. To do so, `cd` to the `docs` subfolder and run
+Documentation hosting is planned once the repository becomes public. To install the dependencies required to build the documentation locally, add the `doc` extra when installing, e.g. `pip install -e .[doc]` (the `dev` extra include the `doc` extra). Then, run
 
 ```bash
-$ make html SPHINXOPTS="-d _build/doctrees"
+$ make docs
 ```
