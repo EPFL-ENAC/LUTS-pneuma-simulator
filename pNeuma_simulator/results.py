@@ -3,6 +3,7 @@ import os
 import zipfile
 
 import numpy as np
+from numpy.linalg import norm
 from scipy.stats import binned_statistic
 
 from pNeuma_simulator import params
@@ -220,7 +221,7 @@ def percolate(items, n_moto, start: int = 1):
                             vel_y.append(vel[1] / v_max)
                     l_T.append(np.mean(deg_range))
                     phi_cars = np.mean(vel_car)
-                    phi_moto = np.norm([np.sum(vel_x), np.sum(vel_y)]) / n_moto
+                    phi_moto = norm([np.sum(vel_x), np.sum(vel_y)]) / n_moto
                     l_DPhi.append(phi_moto - phi_cars)
     l_T = np.round(l_T) / 2
     bins = np.sort(np.unique(l_T))
