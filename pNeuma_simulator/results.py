@@ -4,7 +4,7 @@ import zipfile
 
 import numpy as np
 from numpy.linalg import norm
-from scipy.stats import binned_statistic
+from scipy.stats import binned_statistic, bootstrap
 
 from pNeuma_simulator import params
 from pNeuma_simulator.gang import decay
@@ -270,7 +270,7 @@ def confidence_interval(data, rng, setting="sem"):
     """
     if len(data) > 1:
         # https://github.com/scipy/scipy/issues/14645
-        res = np.bootstrap(
+        res = bootstrap(
             (data,),
             np.mean,
             batch=10,
