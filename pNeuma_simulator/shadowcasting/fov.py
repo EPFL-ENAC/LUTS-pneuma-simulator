@@ -82,19 +82,19 @@ class Quadrant:
     cardinal direction of the quadrant (north, east, south, or west).
 
     Attributes:
-        north (int): Constant representing the north direction.
-        east (int): Constant representing the east direction.
-        south (int): Constant representing the south direction.
-        west (int): Constant representing the west direction.
         cardinal (int): The cardinal direction of the quadrant.
         ox (int): The x-coordinate of the origin.
         oy (int): The y-coordinate of the origin.
     """
 
     north = 0
+    "(int): Constant representing the north direction."
     east = 1
+    "(int): Constant representing the east direction."
     south = 2
+    "(int): Constant representing the south direction."
     west = 3
+    "(int): Constant representing the west direction."
 
     def __init__(self, cardinal, origin):
         """Initializes a Quadrant with a cardinal direction and origin.
