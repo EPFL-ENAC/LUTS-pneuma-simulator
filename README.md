@@ -21,7 +21,7 @@ The refactored `pNEUMA-simulator.ipynb`, using the modular structure of the pack
 
 ## Building the docs
 
-Documentation hosting is planned once the repository becomes public. To install the dependencies required to build the documentation locally, add the `doc` extra when installing, e.g. `pip install -e .[doc]` (the `dev` extra include the `doc` extra). Then, run
+Documentation hosting is planned once the repository becomes public. To install the dependencies required to build the documentation locally, add the `docs` extra when installing, e.g. `pip install -e .[docs]` (the `dev` extra include the `docs` extra). Then, run
 
 ```bash
 $ make docs

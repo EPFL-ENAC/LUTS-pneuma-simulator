@@ -75,7 +75,7 @@ dev = [
     "sphinx-pyproject",
     "sphinx-mdinclude"
 ]
-doc = [
+docs = [
   "sphinx",
   "sphinx-rtd-theme",
   "nbsphinx",
