@@ -6,6 +6,8 @@
 import os
 import sys
 
+import pNeuma_simulator as ps
+
 sys.path.insert(0, os.path.abspath(".."))
 
 # -- Project information -----------------------------------------------------
@@ -14,10 +16,9 @@ sys.path.insert(0, os.path.abspath(".."))
 project = "pNeuma-simulator"
 copyright = "2024, Georg Anagnostopoulos"
 author = "Georg Anagnostopoulos"
-__version__ = "0.0.0"
+__version__ = ps.__version__
 version = __version__
 release = __version__
-
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

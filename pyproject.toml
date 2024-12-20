@@ -16,6 +16,7 @@ classifiers = [
 packages = [{include = "pNeuma_simulator"}]
 homepage = "https://github.com/EPFL-ENAC/LUTS-pneuma-simulator"
 repository = "https://github.com/EPFL-ENAC/LUTS-pneuma-simulator"
+documentation = "https://pneuma-simulator.readthedocs.io/en/latest/"
 
 [build-system]
 requires = [
@@ -32,7 +33,6 @@ style = "semver"
 [tool.poetry-dynamic-versioning.substitution]
 files = [
 	"pNeuma_simulator/__init__.py",
-	"docs/conf.py"
 ]
 
 [tool.poetry.dependencies]
