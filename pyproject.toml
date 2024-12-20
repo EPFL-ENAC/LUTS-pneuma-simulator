@@ -1,12 +1,8 @@
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
-
 [tool.poetry]
 name = "pNeuma-simulator"
-version = "0.0.1"
+version = "0.0.0"
 description = "A Python package for the pNeuma simulator."
-authors = ["Georg Anagnostopoulos"]
+authors = ["Georg Anagnostopoulos, <georgios.anagnostopoulos@epfl.ch>"]
 readme = "README.md"
 keywords = ["python"]
 classifiers = [
@@ -16,6 +12,27 @@ classifiers = [
     "Operating System :: Unix",
     "Operating System :: MacOS :: MacOS X",
     "Operating System :: Microsoft :: Windows",
+]
+packages = [{include = "pNeuma_simulator"}]
+homepage = "https://github.com/EPFL-ENAC/LUTS-pneuma-simulator"
+repository = "https://github.com/EPFL-ENAC/LUTS-pneuma-simulator"
+
+[build-system]
+requires = [
+    "poetry-core",
+    "poetry-dynamic-versioning>=1.0.0,<2.0.0"
+]
+build-backend = "poetry_dynamic_versioning.backend"
+
+[tool.poetry-dynamic-versioning]
+enable = true
+vcs = "git"
+style = "semver"
+
+[tool.poetry-dynamic-versioning.substitution]
+files = [
+	"pNeuma_simulator/__init__.py",
+	"docs/conf.py"
 ]
 
 [tool.poetry.dependencies]
@@ -29,31 +46,46 @@ scipy = "^1.14.0"
 tqdm = "^4.66.5"
 ipython = "^8.26.0"
 numba = "^0.60.0"
+myst-parser = "^4.0.0"
+pytest = {version = "^8.3.2", optional = true}
+pytest-cov = {version = "^5.0.0", optional = true}
+pytest-mock = {version = "^3.14.0", optional = true}
+pre-commit = {version = "3.3.1", optional = true}
+black = {version = "24.1.1", optional = true}
+ruff = {version = "0.2.0", optional = true}
+mypy = {version = "^1.11.2", optional = true}
+sphinx = {version = "<8", optional = true}
+sphinx-rtd-theme = {version = "^2.0.0", optional = true}
+nbsphinx = {version = "^0.9.5", optional = true}
+sphinx-pyproject = {version = "^0.3.0", optional = true}
+sphinx-mdinclude = {version = "^0.6.2", optional = true}
 
-[tool.poetry.dev-dependencies]
-pre-commit = "3.3.1"
-pytest = "*"
-pytest-cov = "*"
-
-[project.optional-dependencies]
+[tool.poetry.extras]
 dev = [
-	"pre-commit==3.3.1",
-	"pytest",
-	"pytest-cov",
-	"pytest-mock",
-	"black==24.1.1",
-	"ruff==0.2.0",
-	"mypy",
-	"sphinx",
-	"sphinx_rtd_theme",
-	"nbsphinx",
-	"sphinx-pyproject",
-	"sphinx-mdinclude"
+    "pre-commit",
+    "pytest",
+    "pytest-cov",
+    "pytest-mock",
+    "black",
+    "ruff",
+    "mypy",
+    "sphinx",
+    "sphinx-rtd-theme",
+    "nbsphinx",
+    "sphinx-pyproject",
+    "sphinx-mdinclude"
+]
+doc = [
+  "sphinx",
+  "sphinx-rtd-theme",
+  "nbsphinx",
+  "sphinx-pyproject",
+  "sphinx-mdinclude"
 ]
 
 # Linter settings
 [tool.ruff]
-select = ["F",
+lint.select = ["F",
 	  "E",
 	  "I",
 	  "Q",
@@ -62,12 +94,12 @@ select = ["F",
 	  # "SIM",
 	  # "PTH",
 	  # "RET",
- ]
-ignore = ["E722"]
+]
+lint.ignore = ["E722"]
 line-length = 120
 # Allow autofix for all enabled rules (when `--fix`) is provided.
-fixable = ["A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W", "ANN", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "FBT", "ICN", "INP", "ISC", "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RSE", "RUF", "SIM", "SLF", "TCH", "TID", "TRY", "UP", "YTT"]
-unfixable = []
+lint.fixable = ["A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W", "ANN", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "FBT", "ICN", "INP", "ISC", "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RSE", "RUF", "SIM", "SLF", "TCH", "TID", "TRY", "UP", "YTT"]
+lint.unfixable = []
 
 # Code formatter
 [tool.black]
@@ -114,8 +146,9 @@ extensions = [
     "nbsphinx",
     "sphinx_mdinclude",
 	"sphinx.ext.autosummary",
+    "myst_parser"
 ]
 html_theme = "sphinx_rtd_theme"
 
 [tool.codespell]
-ignore-words-list = "socio-economic, checkin"
+ignore-words-list = "socio-economic, checkin, infront"
