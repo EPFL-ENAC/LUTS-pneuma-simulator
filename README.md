@@ -17,7 +17,7 @@ For macOS users, replace `.[dev]` by `'.[dev]'`
 
 ## Usage
 
-The refactored `pNEUMA-simulator.ipynb`, using the modular structure of the package, is located in [notebooks/pNEUMA-simulator.ipynb](pNeuma_simulator/notebooks/pNEUMA-simulator.ipynb).
+The refactored `pNEUMA-simulator.ipynb`, using the modular structure of the package, is located in [notebooks/pNEUMA-simulator.ipynb](notebooks/pNEUMA-simulator.ipynb).
 
 ## Building the docs
 
