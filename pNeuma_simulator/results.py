@@ -179,13 +179,14 @@ def normalized(surface, section):
     return l_points, l_response
 
 
-def percolate(items, n_moto, start: int = 1):
+def percolate(items, n_moto, rng, start: int = 1):
     """Analyzes the percolation of vehicles and motorcycles in a given dataset.
 
     Args:
         items (list): A list of items where each item is a list of frames. Each frame is a dictionary
             containing vehicle data.
         n_moto (int): The number of motorcycles in the dataset.
+        rng (numpy.random.Generator): A random number generator instance for reproducibility.
         start (int, optional): The starting frame index to consider for analysis. Defaults to 1.
 
     Returns:
@@ -227,8 +228,8 @@ def percolate(items, n_moto, start: int = 1):
     bins = np.sort(np.unique(l_T))
     y, bin_edges, _ = binned_statistic(l_T, l_DPhi, statistic="mean", bins=bins)
     x = (bin_edges[1:] + bin_edges[:-1]) / 2
-    low, _, _ = binned_statistic(l_T, l_DPhi, statistic=lambda y: confidence_interval(y, "low"), bins=bins)
-    high, _, _ = binned_statistic(l_T, l_DPhi, statistic=lambda y: confidence_interval(y, "high"), bins=bins)
+    low, _, _ = binned_statistic(l_T, l_DPhi, statistic=lambda y: confidence_interval(y, rng, "low"), bins=bins)
+    high, _, _ = binned_statistic(l_T, l_DPhi, statistic=lambda y: confidence_interval(y, rng, "high"), bins=bins)
 
     return list(x), list(y), list(low), list(high)
 
