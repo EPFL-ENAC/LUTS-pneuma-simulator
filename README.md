@@ -1,7 +1,8 @@
 
 [![Project Status](https://img.shields.io/badge/status-under%20development-yellow)](https://github.com/EPFL-ENAC/pNeuma-simulator)
 ![GitHub License](https://img.shields.io/github/license/EPFL-ENAC/LUTS-pneuma-simulator)
-[![Read the Docs (version)](https://img.shields.io/readthedocs/pneuma-simulator/main)](https://pneuma-simulator.readthedocs.io/en/main/)
+[![Stable Documentation](https://img.shields.io/badge/docs-stable-blue.svg)](https://pneuma-simulator.readthedocs.io/en/stable/)
+[![Dev Documentation](https://img.shields.io/badge/docs-dev-blue.svg)](https://pneuma-simulator.readthedocs.io/en/latest/)
 
 # pNeuma-simulator
 
