@@ -3,6 +3,7 @@
 ![GitHub License](https://img.shields.io/github/license/EPFL-ENAC/LUTS-pneuma-simulator)
 [![Stable Documentation](https://img.shields.io/badge/docs-stable-blue.svg)](https://pneuma-simulator.readthedocs.io/en/stable/)
 [![Dev Documentation](https://img.shields.io/badge/docs-dev-blue.svg)](https://pneuma-simulator.readthedocs.io/en/latest/)
+[![DOI](https://zenodo.org/badge/844379821.svg)](https://doi.org/10.5281/zenodo.14625962)
 
 # pNeuma-simulator
 
