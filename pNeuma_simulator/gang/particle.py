@@ -1,5 +1,7 @@
+from math import atan2, cos, degrees, sin
+
 from matplotlib.patches import Ellipse
-from numpy import array, atan2, cos, degrees, sin
+from numpy import array
 
 from pNeuma_simulator import params
 

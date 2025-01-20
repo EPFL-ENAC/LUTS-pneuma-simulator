@@ -1,4 +1,5 @@
-# from numpy import concatenate, repeat, cos, pi, isfinite, minimum, all
+from math import cos, pi
+
 import numpy as np
 from scipy.optimize import root_scalar
 from scipy.stats import distributions
@@ -118,7 +119,7 @@ def equilibrium(L: float, lanes: int, n_cars: int, n_moto: int, rng: object, dis
         if total == lanes * L:
             f_eq = f(s_eq, lam, v0, d)
             # Adaptation time
-            prefactor = 1 + np.cos(2 * np.pi / n_veh)
+            prefactor = 1 + cos(2 * pi / n_veh)
             tau = 1 / (prefactor * f_eq)
             if all(np.isfinite(tau)):
                 tau = np.minimum(tau, 1 / lam)

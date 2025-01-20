@@ -1,4 +1,5 @@
 from copy import deepcopy
+from math import cos, pi, sin, sqrt
 from typing import List
 
 import numpy as np
@@ -250,10 +251,10 @@ class PoissonDisc:
         i = 0
         while i < self.k:
             # https://meyavuz.wordpress.com/2018/11/15/
-            rho = np.sqrt(self.rng.uniform(r**2, 4 * r**2))
-            theta = self.rng.uniform(0, 2 * np.pi)
-            x = ref_pt.x + rho * np.cos(theta)
-            y = ref_pt.y + rho / self.aspect * np.sin(theta)
+            rho = sqrt(self.rng.uniform(r**2, 4 * r**2))
+            theta = self.rng.uniform(0, 2 * pi)
+            x = ref_pt.x + rho * cos(theta)
+            y = ref_pt.y + rho / self.aspect * sin(theta)
             pt = Particle(x, y, 0.0, 0.0, "Moto")
             if not (
                 -self.width / 2 < pt.x < self.width / 2

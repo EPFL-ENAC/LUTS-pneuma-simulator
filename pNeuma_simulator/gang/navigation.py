@@ -1,3 +1,5 @@
+from math import exp
+
 import numpy as np
 from numba import jit
 from numpy import where
@@ -141,7 +143,7 @@ def decay(vel: float, theta: float) -> np.ndarray:
         alphas (numpy.ndarray): An array of decay angles.
     """
 
-    phi_max = int(np.exp(params.XM * norm(vel) * params.factor + params.CM))
+    phi_max = int(exp(params.XM * norm(vel) * params.factor + params.CM))
     # half degree resolution
     phi_range = np.linspace(phi_max, -phi_max, 4 * phi_max + 1)
     alphas = np.radians(phi_range) - theta
