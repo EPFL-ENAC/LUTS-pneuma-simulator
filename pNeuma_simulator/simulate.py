@@ -1,6 +1,6 @@
 import warnings
 from copy import deepcopy
-from math import isinf, radians
+from math import cos, inf, isinf, pi, radians, sin
 from typing import Callable
 
 import numpy as np
@@ -97,8 +97,8 @@ def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 5
         # Field of View analysis
         ##############################
         for image in agents + images:
-            cos_angle = np.cos(np.pi - image.theta)
-            sin_angle = np.sin(np.pi - image.theta)
+            cos_angle = cos(pi - image.theta)
+            sin_angle = sin(pi - image.theta)
             xc = params.xv - image.x
             yc = params.yv - image.y
             # https://stackoverflow.com/questions/37031356/
@@ -168,11 +168,11 @@ def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 5
             # Distance from walls
             k_w = tangent_dist(theta_i, 0, l_i, w_i)
             if theta_i >= radians(0.5):
-                gap_w = (params.lane - y_i - k_w) / np.sin(theta_i)
+                gap_w = (params.lane - y_i - k_w) / sin(theta_i)
             elif theta_i <= -radians(0.5):
-                gap_w = (params.lane + y_i - k_w) / np.sin(-theta_i)
+                gap_w = (params.lane + y_i - k_w) / sin(-theta_i)
             else:
-                gap_w = np.inf
+                gap_w = inf
             interactions = agent.interactions
             if len(interactions) > 0:
                 gaps = []
@@ -212,9 +212,9 @@ def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 5
                                 )
                             gap = s_i_j - min_d
                         else:
-                            gap = np.inf
+                            gap = inf
                     else:
-                        gap = np.inf
+                        gap = inf
                     gaps.append(gap)
                 if np.isfinite(gaps).sum() > 0:
                     leader = neighbors[np.argmin(gaps)]
