@@ -1,3 +1,5 @@
+from math import cos, sin, sqrt
+
 import numpy as np
 from numba import jit
 
@@ -16,10 +18,10 @@ def direction(theta_i: float) -> tuple:
     """
 
     # Current direction vector
-    e_i = np.array([np.cos(theta_i), np.sin(theta_i)])
+    e_i = np.array([cos(theta_i), sin(theta_i)])
     # Normal vector to current direction
     # https://stackoverflow.com/questions/1243614/
-    e_i_n = np.array([np.sin(theta_i), -np.cos(theta_i)])
+    e_i_n = np.array([sin(theta_i), -cos(theta_i)])
     return e_i, e_i_n
 
 
@@ -55,10 +57,10 @@ def tangent_dist(theta_i: float, theta_j: float, a_i: float, b_i: float) -> floa
     Returns:
         k_prime (float): The tangent distance between theta_i and theta_j.
     """
-    if round(np.cos(theta_j - theta_i), 15) != 0:
-        c_prime = np.sin(theta_j - theta_i) / np.cos(theta_j - theta_i)
-        d_prime = np.sqrt(b_i**2 + a_i**2 * c_prime**2)
-        k_prime = d_prime / np.sqrt(c_prime**2 + 1)
+    if round(cos(theta_j - theta_i), 15) != 0:
+        c_prime = sin(theta_j - theta_i) / cos(theta_j - theta_i)
+        d_prime = sqrt(b_i**2 + a_i**2 * c_prime**2)
+        k_prime = d_prime / sqrt(c_prime**2 + 1)
     else:
         k_prime = a_i
     return k_prime
