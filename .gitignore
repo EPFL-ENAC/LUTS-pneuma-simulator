@@ -135,4 +135,7 @@ dmypy.json
 cython_debug/
 
 .DS_Store
-pNeuma_simulator/notebooks/output
+
+# Don't track input/output
+notebooks/input
+notebooks/output
