@@ -246,7 +246,7 @@ def zipdir(path: str, ziph) -> None:
     # https://stackoverflow.com/questions/36740683/
     for root, _, files in os.walk(path):
         for file in files:
-            if file.endswith(").json"):
+            if file.endswith(").jsonl"):
                 os.chdir(root)
                 ziph.write(file)
                 os.remove(file)
