@@ -1,31 +1,57 @@
-import matplotlib.axes as mpl_axes
-from matplotlib.patches import Ellipse
-from numpy import arange, degrees
+from copy import deepcopy
+from numpy import degrees
 from numpy.linalg import norm
+from matplotlib.patches import Ellipse
+import matplotlib.axes as mpl_axes
 
 from pNeuma_simulator import params
-from pNeuma_simulator.gang import Particle
 
 
-def draw(particle: Particle, ax: mpl_axes.Axes) -> None:
-    """
-    Add this Particle's Ellipse patch to the Matplotlib Axes.
+def draw(agent: dict, ax: mpl_axes.Axes) -> None:
+    """Add this serialized agent's Ellipse patch to the Matplotlib Axes ax.
 
     Args:
-        particle (Particle): The particle object to be drawn.
+        agent (dict): The agent object to be drawn.
         ax (mpl_axes.Axes): The Matplotlib Axes object to add the patch to.
     """
+    if agent["mode"] == "Car":
+        width = 2 * params.car_l
+        height = 2 * params.car_w
+    else:
+        width = 2 * params.moto_l
+        height = 2 * params.moto_w
     ellipse = Ellipse(
-        xy=particle["pos"],
-        width=2 * particle["l"],
-        height=2 * particle["w"],
-        angle=degrees(particle["theta"]),
-        **particle["styles"]
+        xy=agent["pos"],
+        width=width,
+        height=height,
+        angle=degrees(agent["theta"]),
+        **{"ec": "k", "fc": "w"},
     )
     ax.add_patch(ellipse)
+    ax.scatter(
+        agent["pos"][0],
+        agent["pos"][1],
+        marker="o",
+        fc="k",
+        ec="none",
+        s=5,
+    )
+    if norm(agent["vel"]) > 0:
+        ax.arrow(
+            agent["pos"][0],
+            agent["pos"][1],
+            agent["vel"][0],
+            agent["vel"][1],
+            antialiased=True,
+            width=0.1,
+            head_width=0.5,
+            head_length=0.75,
+            color="k",
+            zorder=2,
+        )
 
 
-def ring(t: int, l_agents: list, ax: mpl_axes.Axes, sampler) -> None:
+def ring(t: int, l_agents: list, ax: mpl_axes.Axes) -> None:
     """
     Draw the ring animation for a given time step.
 
@@ -33,31 +59,28 @@ def ring(t: int, l_agents: list, ax: mpl_axes.Axes, sampler) -> None:
         t (int): The time step.
         l_agents (list): A list of agents at each time step.
         ax (matplotlib.axes.Axes): The matplotlib axes object to draw the animation on.
-        sampler: The sampler object.
     """
-
-    for agent in l_agents[t]:
-        draw(agent, ax)
-        ax.scatter(agent["pos"][0], agent["pos"][1], marker="o", c="k", s=10, lw=1)
-        if norm(agent["vel"]) > 0:
-            ax.arrow(
-                agent["pos"][0],
-                agent["pos"][1],
-                agent["vel"][0],
-                agent["vel"][1],
-                width=0.1,
-                head_width=0.5,
-                head_length=0.75,
-                color=agent["styles"]["ec"],
-                zorder=2,
-            )
+    ax.set_aspect("equal")
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_xlim(-params.L / 2, params.L / 2)
+    ax.set_ylim(-params.lane, params.lane)
+    ax.set_axis_off()
     ax.hlines(
-        [-params.lane, 0, params.lane],
+        [-params.lane, params.lane],
         xmin=-params.L / 2,
         xmax=params.L / 2,
         color="k",
-        ls=["-", (0, (15, 15)), "-"],
-        lw=[2, 1, 2],
+        ls="-",
+        lw=3,
     )
-    ax.set_yticks(arange(-params.lane, 3 * params.lane / 2, params.lane / 2))
-    ax.set_xlim(-(sampler.nx + 1) * params.cell / 2, (sampler.nx + 1) * params.cell / 2)
+    for agent in l_agents[t]:
+        if agent["pos"][0] < params.d_max:
+            image = deepcopy(agent)
+            image["pos"][0] += params.L
+            draw(image, ax)
+        elif agent["pos"][0] > params.d_max:
+            image = deepcopy(agent)
+            image["pos"][0] -= params.L
+            draw(image, ax)
+        draw(agent, ax)

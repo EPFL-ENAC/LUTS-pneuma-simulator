@@ -134,13 +134,18 @@ class Particle:
 
     def encode(self):
         my_dict = self.__dict__
+        my_dict.pop("mode", None)
         my_dict.pop("image", None)
+        my_dict.pop("leader", None)
+        my_dict.pop("gap", None)
+        my_dict.pop("tau", None)
         my_dict.pop("rad", None)
         my_dict.pop("l", None)
         my_dict.pop("w", None)
         my_dict.pop("a", None)
         my_dict.pop("b", None)
         my_dict.pop("styles", None)
+        my_dict.pop("interactions", None)
         return my_dict
 
     def __deepcopy__(self, memodict={}):

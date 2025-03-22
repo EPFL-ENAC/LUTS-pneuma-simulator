@@ -21,7 +21,7 @@ d_max = 40.0  # horizon
 scaling = 1.5  # lateral scaling
 clearance = 0.3  # dart spacing
 k = 300  # number of darts thrown
-dt = 0.04  # time step in seconds
+dt = 0.02  # time step in seconds
 sqrtdt = np.sqrt(dt)
 COUNT = int(T / dt) + 1
 # Background grid settings
