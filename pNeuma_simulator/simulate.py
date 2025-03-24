@@ -4,7 +4,7 @@ from math import cos, inf, isinf, pi, radians, sin
 from typing import Callable
 
 import numpy as np
-from joblib import Parallel, delayed
+from joblib import Parallel, delayed, parallel_backend
 from numba import jit
 from numpy.linalg import norm
 
@@ -261,13 +261,14 @@ def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 5
     return (l_agents, [])
 
 
-def batch(seed: int, permutation: tuple):
+def batch(seed: int, permutation: tuple, n_jobs: int):
     """
     Run a batch simulation with the given seed and permutation.
 
     Args:
         seed (int): The seed for random number generation.
         permutation (tuple): A tuple containing the number of cars and motorcycles.
+        n_jobs (int): Number of parallel jobs.
 
     Returns:
         tuple: A tuple containing the simulation results for cars and motorcycles.
@@ -275,11 +276,13 @@ def batch(seed: int, permutation: tuple):
 
     warnings.filterwarnings("ignore", category=RuntimeWarning)
     n_cars, n_moto = permutation
-    with Parallel(n_jobs=-1, prefer="processes") as parallel:
-        try:
-            item = main(n_cars, n_moto, seed, parallel, params.COUNT)
-        except CollisionException:
-            item = (None, None)
+
+    with parallel_backend("loky", inner_max_num_threads=n_jobs):
+        with Parallel(n_jobs=n_jobs, prefer="processes") as parallel:
+            try:
+                item = main(n_cars, n_moto, seed, parallel, params.COUNT)
+            except CollisionException:
+                item = (None, None)
     return item
 
 

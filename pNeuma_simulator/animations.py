@@ -1,20 +1,22 @@
 from copy import deepcopy
+
+import matplotlib.axes as mpl_axes
+from matplotlib.patches import Ellipse
 from numpy import degrees
 from numpy.linalg import norm
-from matplotlib.patches import Ellipse
-import matplotlib.axes as mpl_axes
 
 from pNeuma_simulator import params
 
 
-def draw(agent: dict, ax: mpl_axes.Axes) -> None:
+def draw(agent: dict, n_cars: int, ax: mpl_axes.Axes) -> None:
     """Add this serialized agent's Ellipse patch to the Matplotlib Axes ax.
 
     Args:
         agent (dict): The agent object to be drawn.
+        n_cars (int): The number of cars in the dataset.
         ax (mpl_axes.Axes): The Matplotlib Axes object to add the patch to.
     """
-    if agent["mode"] == "Car":
+    if agent["ID"] <= 2 * n_cars:
         width = 2 * params.car_l
         height = 2 * params.car_w
     else:
@@ -51,12 +53,13 @@ def draw(agent: dict, ax: mpl_axes.Axes) -> None:
         )
 
 
-def ring(t: int, l_agents: list, ax: mpl_axes.Axes) -> None:
+def ring(t: int, n_cars: int, l_agents: list, ax: mpl_axes.Axes) -> None:
     """
     Draw the ring animation for a given time step.
 
     Args:
         t (int): The time step.
+        n_cars (int): The number of cars in the dataset.
         l_agents (list): A list of agents at each time step.
         ax (matplotlib.axes.Axes): The matplotlib axes object to draw the animation on.
     """
@@ -78,9 +81,9 @@ def ring(t: int, l_agents: list, ax: mpl_axes.Axes) -> None:
         if agent["pos"][0] < params.d_max:
             image = deepcopy(agent)
             image["pos"][0] += params.L
-            draw(image, ax)
+            draw(image, n_cars, ax)
         elif agent["pos"][0] > params.d_max:
             image = deepcopy(agent)
             image["pos"][0] -= params.L
-            draw(image, ax)
-        draw(agent, ax)
+            draw(image, n_cars, ax)
+        draw(agent, n_cars, ax)

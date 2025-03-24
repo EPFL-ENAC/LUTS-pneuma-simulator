@@ -179,12 +179,13 @@ def normalized(surface, section):
     return l_points, l_response
 
 
-def percolate(items, n_moto, rng, start: int = 1):
+def percolate(items, n_cars, n_moto, rng, start: int = 1):
     """Analyzes the percolation of vehicles and motorcycles in a given dataset.
 
     Args:
         items (list): A list of items where each item is a list of frames. Each frame is a dictionary
             containing vehicle data.
+        n_cars (int): The number of cars in the dataset.
         n_moto (int): The number of motorcycles in the dataset.
         rng (numpy.random.Generator): A random number generator instance for reproducibility.
         start (int, optional): The starting frame index to consider for analysis. Defaults to 1.
@@ -212,7 +213,7 @@ def percolate(items, n_moto, rng, start: int = 1):
                         lam = frame[j]["lam"]
                         d = frame[j]["d"]
                         v_max = ov(params.d_max, lam, v0, d)
-                        if frame[j]["mode"] == "Car":
+                        if frame[j]["ID"] <= 2 * n_cars:
                             vel_car.append(vel[0] / v_max)
                         else:
                             alphas = decay(np.array(vel), frame[j]["theta"])
