@@ -21,8 +21,7 @@ def navigate(ego: Particle, agents: list[Particle], integer: int, d_max) -> tupl
         d_max (float): horizon distance.
 
     Returns:
-        tuple: target and desired directions in radians,
-        angle choice set in radians,
+        tuple: target direction in radians,
         corresponding distance to collision in meters and
         time to collision in seconds.
     """
@@ -43,14 +42,14 @@ def navigate(ego: Particle, agents: list[Particle], integer: int, d_max) -> tupl
             f_a.append(min([f, d_max]))
         f_a = np.array(f_a)
         # target and desired direction
-        a0, a_des = target(alphas, f_a, d_max, rng)
+        a0 = target(alphas, f_a, d_max, rng)
     else:
-        a0, a_des = 0, 0
+        a0 = 0
         f_a = None
     # actual time to collision
     ttc = collisions(ego, np.linalg.norm(ego.vel), ego.theta, neighbors)
     # store the result
-    return (a0, a_des, f_a, ttc)
+    return (a0, f_a, ttc)
 
 
 def egress(alphas, indices, counts, cond, rng) -> float:
@@ -72,7 +71,7 @@ def egress(alphas, indices, counts, cond, rng) -> float:
     return a0
 
 
-def target(alphas, f_a, d_max, rng) -> tuple:
+def target(alphas, f_a, d_max, rng) -> float:
     """Find consecutive runs and length of runs with condition.
 
     Args:
@@ -81,7 +80,7 @@ def target(alphas, f_a, d_max, rng) -> tuple:
         d_max (int): distance to horizon in meters.
 
     Returns:
-        tuple: target and desired directions in radians
+        float: target direction in radians
     """
     # Find consecutive runs and length of runs with condition
     # https://stackoverflow.com/questions/71746585
@@ -117,17 +116,7 @@ def target(alphas, f_a, d_max, rng) -> tuple:
         else:
             maximum = rng.choice(maxima)
         a0 = alphas[maximum]
-    # Objective: squared distance to destination (for performance)
-    d_a = d_max**2 + f_a**2 - 2 * d_max * f_a * np.cos(a0 - alphas)
-    # minimize distance to destination
-    minima = where(d_a == d_a.min())[0]
-    if len(minima) == 1:
-        minimum = minima[0]
-    else:
-        minimum = rng.choice(minima)
-    # chosen direction
-    a_des = alphas[minimum]
-    return (a0, a_des)
+    return a0
 
 
 @jit(nopython=True)

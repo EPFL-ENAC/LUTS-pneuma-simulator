@@ -1,4 +1,3 @@
-import warnings
 from copy import deepcopy
 from math import cos, inf, isinf, pi, radians, sin
 from typing import Callable
@@ -48,7 +47,7 @@ def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 5
     if n_moto > 0:
         agents.extend(rng.choice(samples[2 * n_cars :], n_moto, replace=False))
     l_agents = []
-    tau, lam, v0, d = equilibrium(
+    tau, lam, v0, s0 = equilibrium(
         params.L,
         params.lanes,
         n_cars,
@@ -68,7 +67,7 @@ def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 5
         agent.tau = tau[n]
         agent.lam = lam[n]
         agent.v0 = v0[n]
-        agent.d = d[n]
+        agent.s0 = s0[n]
         l_a.append(agent.a)
         l_b.append(agent.b)
     for t in range(COUNT - 1):
@@ -138,11 +137,10 @@ def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 5
                 for integer, navigator in zip(integers, navigators)
             )
             for n, agent in enumerate(navigators):
-                a0, a_des, f_a, ttc = tuples[n]
+                a0, f_a, ttc = tuples[n]
                 agent.ttc = ttc
                 if agent.mode == "Moto":
                     agent.a0 = a0
-                    agent.a_des = a_des
                     agent.f_a = f_a.tolist()
         ################################
         # Longitudinal dynamics
@@ -155,7 +153,7 @@ def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 5
             l_vel.append(agent.vel)
             # Updated direction of i
             if agent.mode == "Moto":
-                new_theta = agent.theta + params.dt * (agent.a_des - agent.theta) / params.adaptation_time
+                new_theta = agent.theta + params.dt * (agent.a0 - agent.theta) / params.adaptation_time
                 theta_i = new_theta
             else:
                 theta_i = agent.theta
@@ -246,7 +244,7 @@ def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 5
         dW = params.sqrtdt * rng.standard_normal(len(agents))
         E[t + 1] = (1 - params.dt / np.array(l_b)) * E[t] + np.array(l_a) * dW
         V = norm(l_vel, axis=1)
-        OV = ov(np.array(l_gap), lam, v0, d) + E[t + 1]
+        OV = ov(np.array(l_gap), lam, v0, s0) + E[t + 1]
         V_des = OV * (0.5 * (1 + np.tanh(l_A * (np.array(l_pseudottc) + l_B))))
         new_V = V + ((V_des - V) / tau) * params.dt
         new_V = np.maximum(new_V, 0)
@@ -274,11 +272,11 @@ def batch(seed: int, permutation: tuple, n_jobs: int):
         tuple: A tuple containing the simulation results for cars and motorcycles.
     """
 
-    warnings.filterwarnings("ignore", category=RuntimeWarning)
+    # warnings.filterwarnings("ignore", category=RuntimeWarning)
     n_cars, n_moto = permutation
 
     with parallel_backend("loky", inner_max_num_threads=n_jobs):
-        with Parallel(n_jobs=n_jobs, prefer="processes") as parallel:
+        with Parallel(n_jobs=n_jobs) as parallel:
             try:
                 item = main(n_cars, n_moto, seed, parallel, params.COUNT)
             except CollisionException:

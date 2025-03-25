@@ -211,8 +211,8 @@ def percolate(items, n_cars, n_moto, rng, start: int = 1):
                         vel = frame[j]["vel"]
                         v0 = frame[j]["v0"]
                         lam = frame[j]["lam"]
-                        d = frame[j]["d"]
-                        v_max = ov(params.d_max, lam, v0, d)
+                        s0 = frame[j]["s0"]
+                        v_max = ov(params.d_max, lam, v0, s0)
                         if frame[j]["ID"] <= 2 * n_cars:
                             vel_car.append(vel[0] / v_max)
                         else:

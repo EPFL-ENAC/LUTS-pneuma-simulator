@@ -14,19 +14,18 @@ class Particle:
 
     Attributes:
         ID (int): The unique identifier of the particle.
-        mode (str): The mode of the particle, e.g., "Car" or "Moto".
-        a_des (float): The desired acceleration.
+        mode (str): Type of particle, e.g., "Car" or "Moto".
         a0 (float): The initial acceleration.
         ttc (float): Time to collision.
-        f_a (float): Distance to collision.
-        image (object): The visual representation of the particle.
+        f_a (list): Distance to collision.
+        image (object): Clone of the particle.
         leader (Particle): The leading particle.
-        rad (float): The radius of the particle.
+        rad (numpy.ndarray): The radius matrix.
         gap (float): The gap between particles.
         tau (float): Adaptation time.
         lam (float): Lambda parameter.
-        v0 (float): Initial velocity.
-        d (float): Distance parameter.
+        v0 (float): Desired velocity.
+        s0 (float): Jam spacing.
         pos (numpy.ndarray): The position of the particle.
         vel (numpy.ndarray): The velocity of the particle.
         theta (float): The angle of the particle's velocity.
@@ -50,7 +49,6 @@ class Particle:
         """
         self.ID = ID
         self.mode = mode
-        self.a_des = 0
         self.a0 = 0
         self.ttc = None
         self.f_a = None
@@ -61,7 +59,7 @@ class Particle:
         self.tau = None
         self.lam = None
         self.v0 = None
-        self.d = None
+        self.s0 = None
         self.pos = array((x, y))
         self.vel = array((vx, vy))
         self.theta = atan2(vy, vx)
@@ -153,7 +151,6 @@ class Particle:
         copy_object = Particle(self.x, self.y, self.vx, self.vy, self.mode, self.ID, self.styles)
         copy_object.interactions = self.interactions
         copy_object.leader = self.leader
-        copy_object.a_des = self.a_des
         copy_object.ttc = self.ttc
         copy_object.f_a = self.f_a
         copy_object.gap = self.gap
@@ -161,7 +158,7 @@ class Particle:
         copy_object.lam = self.lam
         copy_object.v0 = self.v0
         copy_object.a0 = self.a0
-        copy_object.d = self.d
+        copy_object.s0 = self.s0
         return copy_object
 
     def __getitem__(self, key):
