@@ -58,7 +58,7 @@ def aggregate(l_agents, n_cars: int, n_moto: int):
         moto_dx = 0
         for agent in agents:
             dx = agent["vel"][0] * params.dt
-            if agent["mode"] == "Car":
+            if agent["ID"] <= 2 * n_cars:
                 cars_dx += dx
             else:
                 moto_dx += dx
