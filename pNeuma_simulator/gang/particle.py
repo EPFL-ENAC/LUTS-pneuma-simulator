@@ -138,6 +138,7 @@ class Particle:
         my_dict.pop("gap", None)
         my_dict.pop("tau", None)
         my_dict.pop("rad", None)
+        my_dict.pop("f_a", None)
         my_dict.pop("l", None)
         my_dict.pop("w", None)
         my_dict.pop("a", None)
