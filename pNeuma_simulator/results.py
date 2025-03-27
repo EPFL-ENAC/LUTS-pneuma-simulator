@@ -211,7 +211,7 @@ def percolate(items, n_cars, n_moto, rng, start: int = 1):
                         v0[j] = frame[j]["v0"]
                         lam[j] = frame[j]["lam"]
                         s0[j] = frame[j]["s0"]
-                v_max = ov(params.d_max, lam, v0, s0)
+                v_max = list(ov(params.d_max, lam, v0, s0))
                 if t > start:
                     deg_range = []
                     vel_car = []
