@@ -201,7 +201,17 @@ def percolate(items, n_cars, n_moto, rng, start: int = 1):
     l_DPhi = []
     for item in items:
         if isinstance(item[0], list):
+            n_veh = 2 * n_cars + n_moto
+            lam = np.empty(shape=n_veh, dtype=float)
+            v0 = np.empty(shape=n_veh, dtype=float)
+            s0 = np.empty(shape=n_veh, dtype=float)
             for t, frame in enumerate(item[0]):
+                if t == 0:
+                    for j, _ in enumerate(frame):
+                        v0[j] = frame[j]["v0"]
+                        lam[j] = frame[j]["lam"]
+                        s0[j] = frame[j]["s0"]
+                v_max = ov(params.d_max, lam, v0, s0)
                 if t > start:
                     deg_range = []
                     vel_car = []
@@ -209,18 +219,14 @@ def percolate(items, n_cars, n_moto, rng, start: int = 1):
                     vel_y = []
                     for j, _ in enumerate(frame):
                         vel = frame[j]["vel"]
-                        v0 = frame[j]["v0"]
-                        lam = frame[j]["lam"]
-                        s0 = frame[j]["s0"]
-                        v_max = ov(params.d_max, lam, v0, s0)
                         if frame[j]["ID"] <= 2 * n_cars:
-                            vel_car.append(vel[0] / v_max)
+                            vel_car.append(vel[0] / v_max[j])
                         else:
                             alphas = decay(np.array(vel), frame[j]["theta"])
                             degs = np.degrees(alphas)
                             deg_range.append(degs[0] - degs[-1])
-                            vel_x.append(vel[0] / v_max)
-                            vel_y.append(vel[1] / v_max)
+                            vel_x.append(vel[0] / v_max[j])
+                            vel_y.append(vel[1] / v_max[j])
                     l_T.append(np.mean(deg_range))
                     phi_cars = np.mean(vel_car)
                     phi_moto = norm([np.sum(vel_x), np.sum(vel_y)]) / n_moto

@@ -130,21 +130,26 @@ class Particle:
         if self.pos[0] > params.L / 2:
             self.pos[0] -= params.L
 
-    def encode(self):
+    def encode(self, t):
         my_dict = self.__dict__
         my_dict.pop("mode", None)
         my_dict.pop("image", None)
         my_dict.pop("leader", None)
         my_dict.pop("gap", None)
-        my_dict.pop("tau", None)
         my_dict.pop("rad", None)
         my_dict.pop("f_a", None)
+        my_dict.pop("a0", None)
         my_dict.pop("l", None)
         my_dict.pop("w", None)
         my_dict.pop("a", None)
         my_dict.pop("b", None)
         my_dict.pop("styles", None)
         my_dict.pop("interactions", None)
+        if t > 0:
+            my_dict.pop("tau", None)
+            my_dict.pop("lam", None)
+            my_dict.pop("v0", None)
+            my_dict.pop("s0", None)
         return my_dict
 
     def __deepcopy__(self, memodict={}):

@@ -90,7 +90,7 @@ def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 5
             serial_agent = deepcopy(agent)
             serial_agent.pos = serial_agent.pos.tolist()
             serial_agent.vel = serial_agent.vel.tolist()
-            serial_agents.append(serial_agent.encode())
+            serial_agents.append(serial_agent.encode(t))
         l_agents.append(serial_agents)
         ##############################
         # Field of View analysis

@@ -11,7 +11,7 @@ L = 90  # road length in meters
 d_max = 40.0  # horizon
 clearance = 0.3  # dart spacing
 k = 300  # number of darts thrown
-dt = 0.01  # time step in seconds
+dt = 0.02  # time step in seconds
 sqrtdt = np.sqrt(dt)
 COUNT = int(T / dt) + 1
 
