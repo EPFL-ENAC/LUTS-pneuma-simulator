@@ -16,7 +16,15 @@ from pNeuma_simulator.shadowcasting import shadowcasting
 from pNeuma_simulator.utils import direction, projection, tangent_dist
 
 
-def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 500, distributed: bool = True):
+def main(
+    n_cars: int,
+    n_moto: int,
+    seed: int,
+    parallel: Callable,
+    COUNT: int = 500,
+    distributed: bool = True,
+    stochastic: bool = True,
+):
     """
     Simulates the main loop of a pNeuma simulator.
 
@@ -27,6 +35,7 @@ def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 5
         parallel (Callable): Callable object for parallel execution.
         COUNT (int, optional): Number of iterations in the main loop. Defaults to 500.
         distributed (bool, optional): Flag indicating if the simulation is distributed. Defaults to True.
+        stochastic (bool, optional): Flag indicating if the simulation is stochastic. Defaults to True.
 
     Returns:
         Tuple: A tuple containing the list of serialized agents at each iteration and an empty list.
@@ -241,11 +250,14 @@ def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 5
                 pseudottc = -1 / agent.ttc
             l_pseudottc.append(pseudottc)
             l_gap.append(agent.gap)
-        dW = params.sqrtdt * rng.standard_normal(len(agents))
-        E[t + 1] = (1 - params.dt / np.array(l_b)) * E[t] + np.array(l_a) * dW
-        V = norm(l_vel, axis=1)
-        OV = ov(np.array(l_gap), lam, v0, s0) + E[t + 1]
+        if stochastic:
+            dW = params.sqrtdt * rng.standard_normal(len(agents))
+            E[t + 1] = (1 - params.dt / np.array(l_b)) * E[t] + np.array(l_a) * dW
+            OV = ov(np.array(l_gap), lam, v0, s0) + E[t + 1]
+        else:
+            OV = ov(np.array(l_gap), lam, v0, s0)
         V_des = OV * (0.5 * (1 + np.tanh(l_A * (np.array(l_pseudottc) + l_B))))
+        V = norm(l_vel, axis=1)
         new_V = V + ((V_des - V) / tau) * params.dt
         new_V = np.maximum(new_V, 0)
         new_theta = np.array(l_theta)
@@ -271,14 +283,12 @@ def batch(seed: int, permutation: tuple, n_jobs: int):
     Returns:
         tuple: A tuple containing the simulation results for cars and motorcycles.
     """
-
-    # warnings.filterwarnings("ignore", category=RuntimeWarning)
     n_cars, n_moto = permutation
 
     with parallel_backend("loky", inner_max_num_threads=n_jobs):
         with Parallel(n_jobs=n_jobs) as parallel:
             try:
-                item = main(n_cars, n_moto, seed, parallel, params.COUNT)
+                item = main(n_cars, n_moto, seed, parallel, params.COUNT, False, False)
             except CollisionException:
                 item = (None, None)
     return item
