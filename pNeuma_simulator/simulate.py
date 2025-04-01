@@ -271,7 +271,7 @@ def main(
     return (l_agents, [])
 
 
-def batch(seed: int, permutation: tuple, n_jobs: int):
+def batch(seed: int, permutation: tuple, n_jobs: int, distributed: bool = True, stochastic: bool = True):
     """
     Run a batch simulation with the given seed and permutation.
 
@@ -279,6 +279,8 @@ def batch(seed: int, permutation: tuple, n_jobs: int):
         seed (int): The seed for random number generation.
         permutation (tuple): A tuple containing the number of cars and motorcycles.
         n_jobs (int): Number of parallel jobs.
+        distributed (bool, optional): Flag indicating if the simulation is distributed. Defaults to True.
+        stochastic (bool, optional): Flag indicating if the simulation is stochastic. Defaults to True.
 
     Returns:
         tuple: A tuple containing the simulation results for cars and motorcycles.
@@ -288,7 +290,7 @@ def batch(seed: int, permutation: tuple, n_jobs: int):
     with parallel_backend("loky", inner_max_num_threads=n_jobs):
         with Parallel(n_jobs=n_jobs) as parallel:
             try:
-                item = main(n_cars, n_moto, seed, parallel, params.COUNT, False, False)
+                item = main(n_cars, n_moto, seed, parallel, params.COUNT, distributed, stochastic)
             except CollisionException:
                 item = (None, None)
     return item

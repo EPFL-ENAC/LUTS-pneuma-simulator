@@ -109,7 +109,7 @@ def equilibrium(L: float, lanes: int, n_cars: int, n_moto: int, rng: object, dis
             return budget(x, lam, v0, s0, lengths, lanes * L)
 
         try:
-            sol = root_scalar(g, bracket=[0, min(v0)])
+            sol = root_scalar(g, bracket=[0, min(v0) - 1e-6])
         except ValueError:
             continue
         # Equilibrium speed
