@@ -1,4 +1,5 @@
 import numpy as np
+from numpy.typing import ArrayLike
 
 
 def budget(v: float, lam: list[float], v0: list[float], s0: list[float], lengths: list[float], L: float) -> float:
@@ -46,7 +47,7 @@ def f(x: float, lam: float, v0: float, s0: float) -> float:
     return y
 
 
-def ov(x: float, lam: float, v0: float, s0: float) -> float:
+def ov(x: ArrayLike, lam: ArrayLike, v0: ArrayLike, s0: ArrayLike) -> ArrayLike:
     """
     Calculates the optimal velocity of a vehicle.
 
