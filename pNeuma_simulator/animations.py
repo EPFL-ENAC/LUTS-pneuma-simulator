@@ -27,7 +27,8 @@ def draw(agent: dict, n_cars: int, ax: mpl_axes.Axes) -> None:
         width=width,
         height=height,
         angle=degrees(agent["theta"]),
-        **{"ec": "k", "fc": "w"},
+        **{"ec": "k", "fc": "w", "lw": 0.5},
+        clip_on=True
     )
     ax.add_patch(ellipse)
     ax.scatter(
@@ -36,7 +37,7 @@ def draw(agent: dict, n_cars: int, ax: mpl_axes.Axes) -> None:
         marker="o",
         fc="k",
         ec="none",
-        s=5,
+        s=4,
     )
     if norm(agent["vel"]) > 0:
         ax.arrow(
@@ -45,6 +46,7 @@ def draw(agent: dict, n_cars: int, ax: mpl_axes.Axes) -> None:
             agent["vel"][0],
             agent["vel"][1],
             antialiased=True,
+            lw=0.25,
             width=0.1,
             head_width=0.5,
             head_length=0.75,
@@ -75,10 +77,10 @@ def ring(t: int, n_cars: int, l_agents: list, ax: mpl_axes.Axes) -> None:
         xmax=params.L / 2,
         color="k",
         ls="-",
-        lw=3,
+        lw=1,
     )
     for agent in l_agents[t]:
-        if agent["pos"][0] < params.d_max:
+        if agent["pos"][0] < -params.d_max:
             image = deepcopy(agent)
             image["pos"][0] += params.L
             draw(image, n_cars, ax)
