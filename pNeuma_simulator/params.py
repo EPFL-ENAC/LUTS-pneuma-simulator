@@ -11,6 +11,7 @@ L = 90  # road length in meters
 d_max = 40.0  # horizon
 clearance = 0.3  # dart spacing
 k = 300  # number of darts thrown
+da = 0.25  # angular resolution
 dt = 0.02  # time step in seconds
 sqrtdt = np.sqrt(dt)
 COUNT = int(T / dt) + 1
@@ -43,30 +44,30 @@ scaling = 1.5  # lateral
 car_l = 2.20
 car_w = 0.90
 car_a = 0.17
-car_b = 3.50
+car_b = 3.80
 
 moto_l = 0.80
 moto_w = 0.30
-moto_a = 0.25
-moto_b = 1.30
+moto_a = 0.24
+moto_b = 1.80
 
 car_args = [
-    (4.60, 0, 1.30),
-    (0.20, 0, 29.0),
-    (1.30, 5.80, 0, 2.10),
+    (4.85, 0, 1.30),
+    (0.20, 0, 8 * factor),
+    (1.50, 5.75, 0, 2.10),
 ]
 car_bounds = [
-    (0.80, 3.50),
-    (22.1, 47.6),
-    (0.40, 3.60),
+    (0.70, 2.40),
+    (20.0, 50),
+    (0.30, 2.75),
 ]
 moto_args = [
-    (2.40, 0, 2.80),
-    (0.30, 0, 33.1),
-    (0.90, 2.50, 0, 2.20),
+    (3.00, 0, 2.60),
+    (0.25, 0, 9 * factor),
+    (1.00, 3.30, 0, 2.00),
 ]
 moto_bounds = [
-    (1.10, 7.00),
-    (23.9, 46.0),
-    (0.20, 3.40),
+    (1.00, 7.00),
+    (20.0, 50.0),
+    (0.10, 3.35),
 ]

@@ -174,9 +174,9 @@ def main(
             x_i, y_i = pos_i
             # Distance from walls
             k_w = tangent_dist(theta_i, 0, l_i, w_i)
-            if theta_i >= radians(0.5):
+            if theta_i >= radians(params.da):
                 gap_w = (params.lane - y_i - k_w) / sin(theta_i)
-            elif theta_i <= -radians(0.5):
+            elif theta_i <= -radians(params.da):
                 gap_w = (params.lane + y_i - k_w) / sin(-theta_i)
             else:
                 gap_w = inf

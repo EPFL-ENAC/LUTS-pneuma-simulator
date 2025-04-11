@@ -134,6 +134,6 @@ def decay(vel: float, theta: float) -> np.ndarray:
 
     phi_max = int(exp(params.XM * norm(vel) * params.factor + params.CM))
     # half degree resolution
-    phi_range = np.linspace(phi_max, -phi_max, 4 * phi_max + 1)
+    phi_range = np.linspace(phi_max, -phi_max, int(2 * (1 / params.da)) * phi_max + 1)
     alphas = np.radians(phi_range) - theta
     return alphas
