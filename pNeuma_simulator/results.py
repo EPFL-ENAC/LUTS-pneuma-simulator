@@ -218,12 +218,13 @@ def percolate(items, n_cars, n_moto, rng, start: int = 1):
                     vel_x = []
                     vel_y = []
                     for j, _ in enumerate(frame):
-                        vel = frame[j]["vel"]
-                        if frame[j]["ID"] <= 2 * n_cars:
+                        vel = item[0][t - 1][j]["vel"]
+                        theta = item[0][t - 1][j]["theta"]
+                        if j <= 2 * n_cars - 1:
                             vel_car.append(vel[0] / v_max[j])
                         else:
-                            alphas = decay(np.array(vel), frame[j]["theta"])
-                            degs = np.degrees(alphas)
+                            alphas = decay(np.array(vel), theta)
+                            degs = np.round(np.degrees(alphas), 2)
                             deg_range.append(degs[0] - degs[-1])
                             vel_x.append(vel[0] / v_max[j])
                             vel_y.append(vel[1] / v_max[j])

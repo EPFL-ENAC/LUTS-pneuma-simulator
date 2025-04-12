@@ -1,7 +1,7 @@
+import argparse
 import itertools
 import json
 import os
-import sys
 import warnings
 import zipfile
 
@@ -16,7 +16,7 @@ from pNeuma_simulator.simulate import batch
 
 warnings.filterwarnings("ignore")
 
-path = "./output/"
+path = "./notebooks/output/"
 os.makedirs(path, exist_ok=True)
 # Combinatorial configurations
 n_veh = 8
@@ -55,4 +55,25 @@ def execute(n_cars, n_moto, epochs=64, n_jobs=64, n_threads=1, distributed=True,
 
 
 if __name__ == "__main__":
-    execute(int(sys.argv[1]), int(sys.argv[2]))
+    parser = argparse.ArgumentParser(description="User input", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("-e", "--epochs", default=64, help="number of epochs")
+    parser.add_argument("-j", "--n_jobs", default=64, help="number of jobs")
+    parser.add_argument("-t", "--n_threads", default=1, help="number of threads")
+    parser.add_argument("--distributed", action="store_false", help="heterogeneity")
+    parser.add_argument("--stochastic", action="store_false", help="stochasticity")
+    parser.add_argument("--save", action="store_false", help="write to file")
+    parser.add_argument("n_cars", help="Number of cars per lane")
+    parser.add_argument("n_moto", help="Total number of motorcycles")
+    args = parser.parse_args()
+    config = vars(args)
+    n_cars = int(config["n_cars"])
+    n_moto = int(config["n_moto"])
+    epochs = int(config["epochs"])
+    n_jobs = int(config["n_jobs"])
+    n_threads = int(config["n_threads"])
+    distributed = config["distributed"]
+    stochastic = config["stochastic"]
+    save = config["save"]
+    print(config)
+    execute(n_cars, n_moto, epochs, n_jobs, n_threads, distributed, stochastic, save)
+    print("Done!")

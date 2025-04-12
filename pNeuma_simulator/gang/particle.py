@@ -132,6 +132,7 @@ class Particle:
 
     def encode(self, t):
         my_dict = self.__dict__
+        my_dict.pop("ID", None)
         my_dict.pop("mode", None)
         my_dict.pop("image", None)
         my_dict.pop("leader", None)
