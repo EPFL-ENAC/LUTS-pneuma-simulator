@@ -140,11 +140,7 @@ def main(
             if len(interactions) > 0:
                 navigators.append(agent)
         if len(navigators) > 0:
-            integers = rng.integers(1e8, size=len(navigators))
-            tuples = parallel(
-                delayed(navigate)(navigator, agents, integer, params.d_max)
-                for integer, navigator in zip(integers, navigators)
-            )
+            tuples = parallel(delayed(navigate)(navigator, agents) for navigator in navigators)
             for n, agent in enumerate(navigators):
                 a0, f_a, ttc = tuples[n]
                 agent.ttc = ttc
@@ -155,11 +151,11 @@ def main(
         # Longitudinal dynamics
         ################################
         l_theta = []
+        l_speed = []
         l_gap = []
         l_pseudottc = []
-        l_vel = []
         for agent in agents:
-            l_vel.append(agent.vel)
+            l_speed.append(agent.speed)
             # Updated direction of i
             if agent.mode == "Moto":
                 new_theta = agent.theta + params.dt * (agent.a0 - agent.theta) / params.adaptation_time
@@ -200,7 +196,8 @@ def main(
                         # Distance from tangent parallel to i
                         k_h = tangent_dist(theta_j, theta_i, l_j, w_j)
                         proj = projection(e_i_n, e_i_j, s_i_j)
-                        if proj <= params.scaling * w_i + k_h:  # This is extremely important!!!
+                        # This is extremely important!!!
+                        if proj <= params.scaling * w_i + k_h:
                             # Distance of closest approach between i and j
                             if proj == 0:
                                 min_d = l_i + l_j
@@ -257,7 +254,7 @@ def main(
         else:
             OV = ov(np.array(l_gap), lam, v0, s0)
         V_des = OV * (0.5 * (1 + np.tanh(l_A * (np.array(l_pseudottc) + l_B))))
-        V = norm(l_vel, axis=1)
+        V = np.array(l_speed)  # norm(l_vel, axis=1)
         new_V = V + ((V_des - V) / tau) * params.dt
         new_V = np.maximum(new_V, 0)
         new_theta = np.array(l_theta)

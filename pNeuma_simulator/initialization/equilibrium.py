@@ -122,6 +122,6 @@ def equilibrium(L: float, lanes: int, n_cars: int, n_moto: int, rng: object, dis
             prefactor = 1 + cos(2 * pi / n_veh)
             tau = 1 / (prefactor * f_eq)
             if all(np.isfinite(tau)):
-                tau = np.minimum(tau, 1 / lam)
+                tau = np.maximum(np.minimum(tau, params.uptau_max), params.uptau_min)
                 break
     return (tau, lam, v0, s0)

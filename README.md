@@ -21,7 +21,7 @@ For macOS users, replace `.[dev]` by `'.[dev]'`
 
 ## Usage
 
-The refactored `pNEUMA-simulator.ipynb`, using the modular structure of the package, is located in [notebooks/pNEUMA-simulator.ipynb](notebooks/pNEUMA-simulator.ipynb).
+Run the simulation by executing the python script `run.py`. Jupyter notebooks for exploration and aggregation of the results, as well as reproducing scientific figures, are located in [notebooks/](notebooks/).
 
 ## Building the docs
 

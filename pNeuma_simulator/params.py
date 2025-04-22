@@ -38,6 +38,8 @@ CM = 4.026397
 XM = -0.062306
 
 # Model parameters
+uptau_min = 0.2
+uptau_max = 2.0
 adaptation_time = 0.6
 scaling = 1.5  # lateral
 

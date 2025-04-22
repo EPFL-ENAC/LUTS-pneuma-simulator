@@ -1,8 +1,10 @@
 import json
 import os
 import zipfile
+from math import cos, sin
 
 import numpy as np
+from numpy import array, empty, sort, unique
 from numpy.linalg import norm
 from scipy.stats import binned_statistic, bootstrap
 
@@ -56,9 +58,11 @@ def aggregate(l_agents, n_cars: int, n_moto: int):
     for t, agents in enumerate(l_agents):
         cars_dx = 0
         moto_dx = 0
-        for agent in agents:
-            dx = agent["vel"][0] * params.dt
-            if agent["ID"] <= 2 * n_cars:
+        for j, agent in enumerate(agents):
+            speed = agent["speed"]
+            theta = agent["theta"]
+            dx = speed * np.cos(theta) * params.dt
+            if j <= 2 * n_cars - 1:
                 cars_dx += dx
             else:
                 moto_dx += dx
@@ -162,7 +166,7 @@ def normalized(surface, section):
                 intersecting.append(curve)
             else:
                 mask.append(True)
-        elevations = np.array(values)[~np.array(mask)]
+        elevations = array(values)[~array(mask)]
         for diagonal_segment in diagonal_segments:
             p1, p2 = diagonal_segment
             for n, curve in enumerate(intersecting):
@@ -196,15 +200,18 @@ def percolate(items, n_cars, n_moto, rng, start: int = 1):
             - y (list): The mean difference in velocity between motorcycles and cars for each bin.
             - low (list): The lower bound of the confidence interval for each bin.
             - high (list): The upper bound of the confidence interval for each bin.
+            - binder (list): The binder cumulant for each bin.
     """
     l_T = []
     l_DPhi = []
+    l_DPhi_2 = []
+    l_DPhi_4 = []
     for item in items:
         if isinstance(item[0], list):
             n_veh = 2 * n_cars + n_moto
-            lam = np.empty(shape=n_veh, dtype=float)
-            v0 = np.empty(shape=n_veh, dtype=float)
-            s0 = np.empty(shape=n_veh, dtype=float)
+            lam = empty(shape=n_veh, dtype=float)
+            v0 = empty(shape=n_veh, dtype=float)
+            s0 = empty(shape=n_veh, dtype=float)
             for t, frame in enumerate(item[0]):
                 if t == 0:
                     for j, _ in enumerate(frame):
@@ -218,26 +225,81 @@ def percolate(items, n_cars, n_moto, rng, start: int = 1):
                     vel_x = []
                     vel_y = []
                     for j, _ in enumerate(frame):
-                        vel = item[0][t - 1][j]["vel"]
+                        speed = item[0][t - 1][j]["speed"]
                         theta = item[0][t - 1][j]["theta"]
                         if j <= 2 * n_cars - 1:
-                            vel_car.append(vel[0] / v_max[j])
+                            vel_car.append(speed / v_max[j])
                         else:
-                            alphas = decay(np.array(vel), theta)
+                            alphas = decay(speed, theta)
                             degs = np.round(np.degrees(alphas), 2)
                             deg_range.append(degs[0] - degs[-1])
-                            vel_x.append(vel[0] / v_max[j])
-                            vel_y.append(vel[1] / v_max[j])
+                            vel_x.append(speed * cos(theta) / v_max[j])
+                            vel_y.append(speed * sin(theta) / v_max[j])
                     l_T.append(np.mean(deg_range))
                     phi_cars = np.mean(vel_car)
                     phi_moto = norm([np.sum(vel_x), np.sum(vel_y)]) / n_moto
-                    l_DPhi.append(phi_moto - phi_cars)
+                    DPhi = phi_moto - phi_cars
+                    l_DPhi.append(DPhi)
+                    l_DPhi_2.append(DPhi**2)
+                    l_DPhi_4.append(DPhi**4)
     l_T = np.round(l_T) / 2
-    bins = np.sort(np.unique(l_T))
+    bins = sort(unique(l_T))
     y, bin_edges, _ = binned_statistic(l_T, l_DPhi, statistic="mean", bins=bins)
+    y_2, _, _ = binned_statistic(l_T, l_DPhi_2, statistic="mean", bins=bins)
+    y_4, _, _ = binned_statistic(l_T, l_DPhi_4, statistic="mean", bins=bins)
     x = (bin_edges[1:] + bin_edges[:-1]) / 2
     low, _, _ = binned_statistic(l_T, l_DPhi, statistic=lambda y: confidence_interval(y, rng, "low"), bins=bins)
     high, _, _ = binned_statistic(l_T, l_DPhi, statistic=lambda y: confidence_interval(y, rng, "high"), bins=bins)
+    binder = 1 - y_4 / (3 * (y_2**2))
+
+    return list(x), list(y), list(low), list(high), list(binder)
+
+
+def polarize(items, n_cars, n_moto, rng, start: int = 1):
+    """Analyzes the polarization of motorcycles in a given dataset.
+
+    Args:
+        items (list): A list of items where each item is a list of frames. Each frame is a dictionary
+            containing vehicle data.
+        n_cars (int): The number of cars in the dataset.
+        n_moto (int): The number of motorcycles in the dataset.
+        rng (numpy.random.Generator): A random number generator instance for reproducibility.
+        start (int, optional): The starting frame index to consider for analysis. Defaults to 1.
+
+    Returns:
+        tuple: A tuple containing four lists:
+            - x (list): The bin centers for the binned data.
+            - y (list): The mean difference in velocity between motorcycles and cars for each bin.
+            - low (list): The lower bound of the confidence interval for each bin.
+            - high (list): The upper bound of the confidence interval for each bin.
+    """
+    l_T = []
+    l_phi = []
+    for item in items:
+        if isinstance(item[0], list):
+            for t, frame in enumerate(item[0]):
+                if t > start:
+                    deg_range = []
+                    direction = np.array([0.0, 0.0])
+                    for j, _ in enumerate(frame):
+                        speed = item[0][t - 1][j]["speed"]
+                        theta = item[0][t - 1][j]["theta"]
+                        if j <= 2 * n_cars - 1:
+                            pass
+                        else:
+                            alphas = decay(speed, theta)
+                            degs = np.round(np.degrees(alphas), 2)
+                            deg_range.append(degs[0] - degs[-1])
+                            direction += np.array([np.cos(theta), np.sin(theta)])
+                    l_T.append(np.mean(deg_range))
+                    phi = norm(direction) / n_moto
+                    l_phi.append(phi)
+    l_T = np.round(l_T) / 2
+    bins = np.sort(unique(l_T))
+    y, bin_edges, _ = binned_statistic(l_T, l_phi, statistic="mean", bins=bins)
+    x = (bin_edges[1:] + bin_edges[:-1]) / 2
+    low, _, _ = binned_statistic(l_T, l_phi, statistic=lambda y: confidence_interval(y, rng, "low"), bins=bins)
+    high, _, _ = binned_statistic(l_T, l_phi, statistic=lambda y: confidence_interval(y, rng, "high"), bins=bins)
 
     return list(x), list(y), list(low), list(high)
 

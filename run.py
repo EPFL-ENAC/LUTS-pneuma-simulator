@@ -49,7 +49,7 @@ def execute(n_cars, n_moto, epochs=64, n_jobs=64, n_threads=1, distributed=True,
                         json.dump(item, outfile)
                         outfile.write("\n")
                 # Compress as Zip and delete original JSONL
-                with zipfile.ZipFile(f"{path}{permutation}_da.zip", "w", zipfile.ZIP_DEFLATED) as zipf:
+                with zipfile.ZipFile(f"{path}{permutation}_r.zip", "w", zipfile.ZIP_DEFLATED) as zipf:
                     zipdir(path, zipf)
             print(permutation)
 
