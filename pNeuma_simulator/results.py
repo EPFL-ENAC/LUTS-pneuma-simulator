@@ -1,7 +1,7 @@
 import json
 import os
 import zipfile
-from math import cos, sin
+from math import atan2, cos, sin
 
 import numpy as np
 from numpy import array, empty, sort, unique
@@ -59,9 +59,17 @@ def aggregate(l_agents, n_cars: int, n_moto: int):
         cars_dx = 0
         moto_dx = 0
         for j, agent in enumerate(agents):
-            speed = agent["speed"]
-            theta = agent["theta"]
-            dx = speed * np.cos(theta) * params.dt
+            # speed = agent["speed"]
+            # theta = agent["theta"]
+            try:
+                speed = agent["speed"]
+                theta = agent["theta"]
+                dt = params.dt
+            except:
+                speed = norm(agent["vel"])
+                theta = atan2(agent["vel"][1], agent["vel"][0])
+                dt = 0.12
+            dx = speed * np.cos(theta) * dt
             if j <= 2 * n_cars - 1:
                 cars_dx += dx
             else:
@@ -72,10 +80,10 @@ def aggregate(l_agents, n_cars: int, n_moto: int):
             if n_moto > 0:
                 l_moto_dx.append(moto_dx)
     VKT_cars = 1e-3 * sum(l_cars_dx)
-    VHT_cars = 2e-3 * n_cars * len(l_cars_dx) * params.dt / params.factor
+    VHT_cars = 2e-3 * n_cars * len(l_cars_dx) * dt / params.factor
     if n_moto > 0:
         VKT_moto = 1e-3 * sum(l_moto_dx)
-        VHT_moto = 1e-3 * n_moto * len(l_moto_dx) * params.dt / params.factor
+        VHT_moto = 1e-3 * n_moto * len(l_moto_dx) * dt / params.factor
     else:
         VKT_moto = None
         VHT_moto = None
@@ -217,7 +225,10 @@ def percolate(items, n_cars, n_moto, rng, start: int = 1):
                     for j, _ in enumerate(frame):
                         v0[j] = frame[j]["v0"]
                         lam[j] = frame[j]["lam"]
-                        s0[j] = frame[j]["s0"]
+                        try:
+                            s0[j] = frame[j]["s0"]
+                        except:
+                            s0[j] = frame[j]["d"]
                 v_max = list(ov(params.d_max, lam, v0, s0))
                 if t > start:
                     deg_range = []
@@ -225,8 +236,12 @@ def percolate(items, n_cars, n_moto, rng, start: int = 1):
                     vel_x = []
                     vel_y = []
                     for j, _ in enumerate(frame):
-                        speed = item[0][t - 1][j]["speed"]
-                        theta = item[0][t - 1][j]["theta"]
+                        try:
+                            speed = item[0][t - 1][j]["speed"]
+                            theta = item[0][t - 1][j]["theta"]
+                        except:
+                            speed = norm(item[0][t - 1][j]["vel"])
+                            theta = atan2(item[0][t - 1][j]["vel"][1], item[0][t - 1][j]["vel"][0])
                         if j <= 2 * n_cars - 1:
                             vel_car.append(speed / v_max[j])
                         else:
