@@ -74,6 +74,6 @@ def decay(speed: float, theta: float) -> np.ndarray:
     gamma_max = round(exp(params.XM * speed * params.factor + params.CM) / params.da) * params.da
     # angular resolution in the reference system of the road
     gamma = np.linspace(gamma_max, -gamma_max, int(2 * gamma_max / params.da) + 1)
-    # in the referene system of the agent
+    # in the reference system of the agent
     alphas = np.radians(gamma) - theta
     return alphas
