@@ -158,7 +158,7 @@ def main(
             l_speed.append(agent.speed)
             # Updated direction of i
             if agent.mode == "Moto":
-                new_theta = agent.theta + params.dt * (agent.a0 - agent.theta) / params.adaptation_time
+                new_theta = agent.theta + params.dt * (agent.a0 - agent.theta) / params.tau
                 theta_i = new_theta
             else:
                 theta_i = agent.theta
@@ -254,7 +254,7 @@ def main(
         else:
             OV = ov(np.array(l_gap), lam, v0, s0)
         V_des = OV * (0.5 * (1 + np.tanh(l_A * (np.array(l_pseudottc) + l_B))))
-        V = np.array(l_speed)  # norm(l_vel, axis=1)
+        V = np.array(l_speed)
         new_V = V + ((V_des - V) / tau) * params.dt
         new_V = np.maximum(new_V, 0)
         new_theta = np.array(l_theta)

@@ -31,16 +31,16 @@ shape = yv.shape
 keep = 1 / 3
 
 # Braking constants
-A = 9
-B = 1 / 3
+A = 6  # 9
+B = 1 / 2  # 1 / 3
 # Manoeuvring constants
 CM = 4.026397
 XM = -0.062306
 
 # Model parameters
+tau = 0.6
 uptau_min = 0.2
-uptau_max = 2.0
-adaptation_time = 0.6
+uptau_max = 1.0
 scaling = 1.5  # lateral
 
 car_l = 2.20
@@ -59,10 +59,15 @@ car_args = [
     (1.50, 5.75, 0, 2.10),
 ]
 car_bounds = [
-    (0.70, 2.40),
-    (20.0, 50),
-    (0.30, 2.75),
+    (0.80, 3.50),
+    (22.5, 50.0),
+    (0.45, 3.60),
 ]
+# car_bounds = [
+#     (0.80, 3.50),
+#     (22.1, 47.6),
+#     (0.40, 3.60),
+# ]
 moto_args = [
     (3.00, 0, 2.60),
     (0.25, 0, 9 * factor),
@@ -70,6 +75,11 @@ moto_args = [
 ]
 moto_bounds = [
     (1.00, 7.00),
-    (20.0, 50.0),
-    (0.10, 3.35),
+    (25.0, 50.0),
+    (0.10, 3.00),
 ]
+# moto_bounds = [
+#     (1.10, 7.00),
+#     (23.9, 46.0),
+#     (0.20, 3.40),
+# ]
