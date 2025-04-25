@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH --job-name RUN_EXP
 #SBATCH --account=luts
-#SBATCH --nodes 1
+#SBATCH --nodes 4
 #SBATCH --partition=standard
 #SBATCH --qos=serial
-#SBATCH --time 04:00:00
+#SBATCH --time 06:00:00
 #SBATCH --ntasks-per-node=1
 #SBATCH --output "out/slurm-%A_%a.log"
 #SBATCH --mem=64G
