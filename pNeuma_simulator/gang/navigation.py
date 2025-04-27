@@ -39,17 +39,20 @@ def navigate(ego: Particle, agents: list[Particle]) -> tuple:
             f_a.append(min([f, params.d_max]))
         f_a = array(f_a)
         # maximize distance to collision
-        optima = find_peaks(f_a)[0]
-        peaks = array(f_a)[optima]
-        maxima = argwhere(peaks == max(peaks)).flatten()
-        indices = optima[maxima]
-        if len(indices) > 1:
-            # get the most central optimum (less deviation)
-            optimum = indices[argmin(abs(alphas[indices]))]
-        else:
-            optimum = indices[0]
-        # desired direction
-        a0 = alphas[optimum]
+        try:
+            optima = find_peaks(f_a)[0]
+            peaks = array(f_a)[optima]
+            maxima = argwhere(peaks == max(peaks)).flatten()
+            indices = optima[maxima]
+            if len(indices) > 1:
+                # get the most central optimum (less deviation)
+                optimum = indices[argmin(abs(alphas[indices]))]
+            else:
+                optimum = indices[0]
+            # desired direction
+            a0 = alphas[optimum]
+        except ValueError:
+            a0 = 0
     else:
         a0 = 0
         f_a = None

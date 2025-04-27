@@ -4,7 +4,7 @@
 #SBATCH --nodes 1
 #SBATCH --partition=bigmem
 #SBATCH --qos=serial
-#SBATCH --time 48:00:00
+#SBATCH --time 96:00:00
 #SBATCH --ntasks-per-node=1
 #SBATCH --output "out/slurm-%A_%a.log"
 #SBATCH --mem=512G
