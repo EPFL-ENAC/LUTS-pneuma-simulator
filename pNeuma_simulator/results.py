@@ -59,8 +59,6 @@ def aggregate(l_agents, n_cars: int, n_moto: int):
         cars_dx = 0
         moto_dx = 0
         for j, agent in enumerate(agents):
-            # speed = agent["speed"]
-            # theta = agent["theta"]
             try:
                 speed = agent["speed"]
                 theta = agent["theta"]
@@ -319,11 +317,12 @@ def polarize(items, n_cars, n_moto, rng, start: int = 1):
     return list(x), list(y), list(low), list(high)
 
 
-def zipdir(path: str, ziph) -> None:
+def zipdir(path: str, permutation, ziph) -> None:
     """Zip the directory at the given path.
 
     Args:
         path (str): The path of the directory to be zipped.
+        permutation (tuple): The permutation considered.
         ziph: The zipfile handle.
     """
     # ziph is zipfile handle
@@ -331,7 +330,7 @@ def zipdir(path: str, ziph) -> None:
     # https://stackoverflow.com/questions/36740683/
     for root, _, files in os.walk(path):
         for file in files:
-            if file.endswith(").jsonl"):
+            if file.endswith(f"{permutation}.jsonl"):
                 os.chdir(root)
                 ziph.write(file)
                 os.remove(file)

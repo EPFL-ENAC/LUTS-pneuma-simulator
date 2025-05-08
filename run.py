@@ -49,8 +49,13 @@ def execute(n_cars, n_moto, epochs=64, n_jobs=64, n_threads=1, distributed=True,
                         json.dump(item, outfile)
                         outfile.write("\n")
                 # Compress as Zip and delete original JSONL
-                with zipfile.ZipFile(f"{path}{permutation}_r.zip", "w", zipfile.ZIP_DEFLATED) as zipf:
-                    zipdir(path, zipf)
+                filename = f"{path}{permutation}_r.zip"
+                if distributed and not stochastic:
+                    filename = f"{path}{permutation}_het_det.zip"
+                elif not distributed and not stochastic:
+                    filename = f"{path}{permutation}_hom_det.zip"
+                with zipfile.ZipFile(filename, "w", zipfile.ZIP_DEFLATED) as zipf:
+                    zipdir(path, permutation, zipf)
             print(permutation)
 
 
