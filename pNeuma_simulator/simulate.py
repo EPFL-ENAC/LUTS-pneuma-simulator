@@ -1,10 +1,9 @@
-import warnings
 from copy import deepcopy
 from math import cos, inf, isinf, pi, radians, sin
 from typing import Callable
 
 import numpy as np
-from joblib import Parallel, delayed
+from joblib import Parallel, delayed, parallel_backend
 from numba import jit
 from numpy.linalg import norm
 
@@ -17,7 +16,15 @@ from pNeuma_simulator.shadowcasting import shadowcasting
 from pNeuma_simulator.utils import direction, projection, tangent_dist
 
 
-def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 500, distributed: bool = True):
+def main(
+    n_cars: int,
+    n_moto: int,
+    seed: int,
+    parallel: Callable,
+    COUNT: int = 500,
+    distributed: bool = True,
+    stochastic: bool = True,
+):
     """
     Simulates the main loop of a pNeuma simulator.
 
@@ -28,6 +35,7 @@ def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 5
         parallel (Callable): Callable object for parallel execution.
         COUNT (int, optional): Number of iterations in the main loop. Defaults to 500.
         distributed (bool, optional): Flag indicating if the simulation is distributed. Defaults to True.
+        stochastic (bool, optional): Flag indicating if the simulation is stochastic. Defaults to True.
 
     Returns:
         Tuple: A tuple containing the list of serialized agents at each iteration and an empty list.
@@ -48,7 +56,7 @@ def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 5
     if n_moto > 0:
         agents.extend(rng.choice(samples[2 * n_cars :], n_moto, replace=False))
     l_agents = []
-    tau, lam, v0, d = equilibrium(
+    tau, lam, v0, s0 = equilibrium(
         params.L,
         params.lanes,
         n_cars,
@@ -68,7 +76,7 @@ def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 5
         agent.tau = tau[n]
         agent.lam = lam[n]
         agent.v0 = v0[n]
-        agent.d = d[n]
+        agent.s0 = s0[n]
         l_a.append(agent.a)
         l_b.append(agent.b)
     for t in range(COUNT - 1):
@@ -91,7 +99,7 @@ def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 5
             serial_agent = deepcopy(agent)
             serial_agent.pos = serial_agent.pos.tolist()
             serial_agent.vel = serial_agent.vel.tolist()
-            serial_agents.append(serial_agent.encode())
+            serial_agents.append(serial_agent.encode(t))
         l_agents.append(serial_agents)
         ##############################
         # Field of View analysis
@@ -132,30 +140,25 @@ def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 5
             if len(interactions) > 0:
                 navigators.append(agent)
         if len(navigators) > 0:
-            integers = rng.integers(1e8, size=len(navigators))
-            tuples = parallel(
-                delayed(navigate)(navigator, agents, integer, params.d_max)
-                for integer, navigator in zip(integers, navigators)
-            )
+            tuples = parallel(delayed(navigate)(navigator, agents) for navigator in navigators)
             for n, agent in enumerate(navigators):
-                a0, a_des, f_a, ttc = tuples[n]
+                a0, f_a, ttc = tuples[n]
                 agent.ttc = ttc
                 if agent.mode == "Moto":
                     agent.a0 = a0
-                    agent.a_des = a_des
                     agent.f_a = f_a.tolist()
         ################################
         # Longitudinal dynamics
         ################################
         l_theta = []
+        l_speed = []
         l_gap = []
         l_pseudottc = []
-        l_vel = []
         for agent in agents:
-            l_vel.append(agent.vel)
+            l_speed.append(agent.speed)
             # Updated direction of i
             if agent.mode == "Moto":
-                new_theta = agent.theta + params.dt * (agent.a_des - agent.theta) / params.adaptation_time
+                new_theta = agent.theta + params.dt * (agent.a0 - agent.theta) / params.tau
                 theta_i = new_theta
             else:
                 theta_i = agent.theta
@@ -167,9 +170,9 @@ def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 5
             x_i, y_i = pos_i
             # Distance from walls
             k_w = tangent_dist(theta_i, 0, l_i, w_i)
-            if theta_i >= radians(0.5):
+            if theta_i >= radians(params.da):
                 gap_w = (params.lane - y_i - k_w) / sin(theta_i)
-            elif theta_i <= -radians(0.5):
+            elif theta_i <= -radians(params.da):
                 gap_w = (params.lane + y_i - k_w) / sin(-theta_i)
             else:
                 gap_w = inf
@@ -193,7 +196,8 @@ def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 5
                         # Distance from tangent parallel to i
                         k_h = tangent_dist(theta_j, theta_i, l_j, w_j)
                         proj = projection(e_i_n, e_i_j, s_i_j)
-                        if proj <= params.scaling * w_i + k_h:  # This is extremely important!!!
+                        # This is extremely important!!!
+                        if proj <= params.scaling * w_i + k_h:
                             # Distance of closest approach between i and j
                             if proj == 0:
                                 min_d = l_i + l_j
@@ -243,11 +247,14 @@ def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 5
                 pseudottc = -1 / agent.ttc
             l_pseudottc.append(pseudottc)
             l_gap.append(agent.gap)
-        dW = params.sqrtdt * rng.standard_normal(len(agents))
-        E[t + 1] = (1 - params.dt / np.array(l_b)) * E[t] + np.array(l_a) * dW
-        V = norm(l_vel, axis=1)
-        OV = ov(np.array(l_gap), lam, v0, d) + E[t + 1]
+        if stochastic:
+            dW = params.sqrtdt * rng.standard_normal(len(agents))
+            E[t + 1] = (1 - params.dt / np.array(l_b)) * E[t] + np.array(l_a) * dW
+            OV = ov(np.array(l_gap), lam, v0, s0) + E[t + 1]
+        else:
+            OV = ov(np.array(l_gap), lam, v0, s0)
         V_des = OV * (0.5 * (1 + np.tanh(l_A * (np.array(l_pseudottc) + l_B))))
+        V = np.array(l_speed)
         new_V = V + ((V_des - V) / tau) * params.dt
         new_V = np.maximum(new_V, 0)
         new_theta = np.array(l_theta)
@@ -261,25 +268,28 @@ def main(n_cars: int, n_moto: int, seed: int, parallel: Callable, COUNT: int = 5
     return (l_agents, [])
 
 
-def batch(seed: int, permutation: tuple):
+def batch(seed: int, permutation: tuple, n_jobs: int, distributed: bool = True, stochastic: bool = True):
     """
     Run a batch simulation with the given seed and permutation.
 
     Args:
         seed (int): The seed for random number generation.
         permutation (tuple): A tuple containing the number of cars and motorcycles.
+        n_jobs (int): Number of parallel jobs.
+        distributed (bool, optional): Flag indicating if the simulation is distributed. Defaults to True.
+        stochastic (bool, optional): Flag indicating if the simulation is stochastic. Defaults to True.
 
     Returns:
         tuple: A tuple containing the simulation results for cars and motorcycles.
     """
-
-    warnings.filterwarnings("ignore", category=RuntimeWarning)
     n_cars, n_moto = permutation
-    with Parallel(n_jobs=-1, prefer="processes") as parallel:
-        try:
-            item = main(n_cars, n_moto, seed, parallel, params.COUNT)
-        except CollisionException:
-            item = (None, None)
+
+    with parallel_backend("loky", inner_max_num_threads=n_jobs):
+        with Parallel(n_jobs=n_jobs) as parallel:
+            try:
+                item = main(n_cars, n_moto, seed, parallel, params.COUNT, distributed, stochastic)
+            except CollisionException:
+                item = (None, None)
     return item
 
 
