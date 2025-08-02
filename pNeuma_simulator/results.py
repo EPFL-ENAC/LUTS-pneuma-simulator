@@ -204,8 +204,8 @@ def percolate(items, n_cars, n_moto, rng, start: int = 1):
         tuple: A tuple containing four lists:
             - x (list): The bin centers for the binned data.
             - y (list): The mean difference in velocity between motorcycles and cars for each bin.
-            - low (list): The lower bound of the confidence interval for each bin.
-            - high (list): The upper bound of the confidence interval for each bin.
+            - l_T (list): Control data (T).
+            - l_DPhi (list): Response data (Dphi).
             - binder (list): The binder cumulant for each bin.
     """
     l_T = []
@@ -261,11 +261,9 @@ def percolate(items, n_cars, n_moto, rng, start: int = 1):
     y_2, _, _ = binned_statistic(l_T, l_DPhi_2, statistic="mean", bins=bins)
     y_4, _, _ = binned_statistic(l_T, l_DPhi_4, statistic="mean", bins=bins)
     x = (bin_edges[1:] + bin_edges[:-1]) / 2
-    low, _, _ = binned_statistic(l_T, l_DPhi, statistic=lambda y: confidence_interval(y, rng, "low"), bins=bins)
-    high, _, _ = binned_statistic(l_T, l_DPhi, statistic=lambda y: confidence_interval(y, rng, "high"), bins=bins)
     binder = 1 - y_4 / (3 * (y_2**2))
 
-    return list(x), list(y), list(low), list(high), list(binder)
+    return list(x), list(y), list(l_T), list(l_DPhi), list(binder)
 
 
 def polarize(items, n_cars, n_moto, rng, start: int = 1):
