@@ -34,6 +34,8 @@ keep = 1 / 3
 A = 6
 B = 1 / 2
 # Manoeuvring constants
+CC = 2.8700
+XC = -0.0512
 CM = 4.026397
 XM = -0.062306
 

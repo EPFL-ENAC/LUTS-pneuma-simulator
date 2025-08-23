@@ -49,6 +49,8 @@ numba = "<=0.60.0"
 powerlaw = "^1.5"
 scikit-learn = "<=1.6.1"
 myst-parser = "^4.0.0"
+ipympl = "^0.9.7"
+colorspacious= "^1.1.2"
 pytest = {version = "^8.3.2", optional = true}
 pytest-cov = {version = "^5.0.0", optional = true}
 pytest-mock = {version = "^3.14.0", optional = true}
