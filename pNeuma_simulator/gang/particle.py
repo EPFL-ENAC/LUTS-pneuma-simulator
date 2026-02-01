@@ -1,7 +1,8 @@
 from math import cos, degrees, sin
+from typing import Optional
 
 from matplotlib.patches import Ellipse
-from numpy import array
+from numpy import array, ndarray, round
 
 from pNeuma_simulator import params
 
@@ -19,7 +20,7 @@ class Particle:
         a0 (float): The desired direction.
         ttc (float): Time to collision.
         f_a (list): Distance to collision.
-        image (object): Clone of the particle.
+        image (Particle | None): Clone of the particle for periodic boundaries.
         leader (Particle): The leading particle.
         rad (numpy.ndarray): The radius matrix.
         gap (float): The gap between particles.
@@ -33,7 +34,14 @@ class Particle:
         interactions (list): List of interactions with other particles.
     """
 
-    def __init__(self, x, y, speed, theta, mode="Car", ID=None, styles=None):
+    # Optionals
+    image: Optional["Particle"]
+    rad: Optional[ndarray]
+    gap: Optional[float]
+
+    def __init__(
+        self, x, y, speed, theta, mode="Car", ID=None, styles={"ec": "k", "fill": False}, motion_mode="CAR_FOLLOWING"
+    ):
         """Initialize the particle's position, velocity, mode and ID.
 
         Any key-value pairs passed in the styles dictionary will be passed
@@ -63,9 +71,13 @@ class Particle:
         self.lam = None
         self.v0 = None
         self.s0 = None
+        self.motion_mode = motion_mode
         self.pos = array((x, y))
         self.vel = array((speed * cos(theta), speed * sin(theta)))
         self.interactions = []
+        self.trajectory = None
+        self.v_hat = None
+        self.index = 0
         if self.mode == "Car":
             self.l = params.car_l  # half length
             self.w = params.car_w  # half width
@@ -77,9 +89,6 @@ class Particle:
             self.a = params.moto_a  # noise amplitude
             self.b = params.moto_b  # relaxation time
         self.styles = styles
-        if not self.styles:
-            # Default ellipse styles
-            self.styles = {"ec": "k", "fill": False}
 
     # For convenience, map the components of the particle's position and
     # velocity vector onto the attributes x, y, vx and vy.
@@ -109,16 +118,48 @@ class Particle:
 
     def draw(self, ax):
         """Add this Particle's Ellipse patch to the Matplotlib Axes ax."""
-        ellipse = Ellipse(xy=self.pos, width=2 * self.l, height=2 * self.w, angle=degrees(self.theta), **self.styles)
+        ellipse = Ellipse(
+            xy=(float(self.x), float(self.y)),
+            width=2 * self.l,
+            height=2 * self.w,
+            angle=degrees(self.theta),
+            **self.styles
+        )
         ax.add_patch(ellipse)
         return ellipse
 
-    def advance(self, dt, new_V, new_theta):
+    def start_lane_change(self, trajectory, v_hat):
+        self.motion_mode = "LANE_CHANGING"
+        self.trajectory = trajectory
+        self.v_hat = v_hat
+        self.index = 0
+
+    def advance(self, dt, new_V=0):
         """Advance the particle's position according to its velocity."""
-        self.theta = new_theta
-        self.speed = new_V
-        self.vel = array((new_V * cos(new_theta), new_V * sin(new_theta)))
-        self.pos = self.pos + self.vel * dt
+        if self.motion_mode == "CRUISING":
+            self.pos = self.pos + self.vel * dt
+        elif self.motion_mode == "CAR_FOLLOWING":
+            self.speed = new_V
+            self.vel = array((new_V, 0))
+            self.pos = self.pos + self.vel * dt
+        elif self.motion_mode == "LANE_CHANGING" and self.trajectory:
+            if self.index < len(self.trajectory):
+                speed = self.trajectory[self.index][2]
+                theta = self.trajectory[self.index][3]
+                self.speed = speed
+                self.theta = theta
+                self.pos[:] = self.trajectory[self.index][:2]
+                self.vel = array((speed * cos(theta), speed * sin(theta)))
+                self.index += 1
+            else:
+                self.motion_mode = "CAR_FOLLOWING"
+                self.speed = self.v_hat
+                self.theta = 0
+                self.pos = round(self.pos + array([self.speed, 0]) * dt, 3)
+                self.vel = array([self.v_hat, 0])
+                self.trajectory = None
+                self.v_hat = None
+                self.index = 0
         # apply periodic boundary conditions
         if self.pos[0] > params.L / 2:
             self.pos[0] -= params.L
@@ -131,7 +172,7 @@ class Particle:
         my_dict.pop("leader", None)
         my_dict.pop("vel", None)
         my_dict.pop("tau", None)
-        my_dict.pop("gap", None)
+        # my_dict.pop("gap", None)
         my_dict.pop("rad", None)
         my_dict.pop("f_a", None)
         my_dict.pop("a0", None)
@@ -140,7 +181,11 @@ class Particle:
         my_dict.pop("a", None)
         my_dict.pop("b", None)
         my_dict.pop("styles", None)
+        my_dict.pop("v_hat", None)
+        my_dict.pop("index", None)
         my_dict.pop("interactions", None)
+        my_dict.pop("trajectory", None)
+        my_dict.pop("motion_mode", None)
         if t > 0:
             my_dict.pop("lam", None)
             my_dict.pop("v0", None)
@@ -151,6 +196,7 @@ class Particle:
         # https://stackoverflow.com/questions/24756712
         copy_object = Particle(self.x, self.y, self.speed, self.theta, self.mode, self.ID, self.styles)
         copy_object.ttc = self.ttc
+        copy_object.gap = self.gap
         copy_object.lam = self.lam
         copy_object.v0 = self.v0
         copy_object.s0 = self.s0

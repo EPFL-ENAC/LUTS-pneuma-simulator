@@ -7,12 +7,12 @@ factor = 3.6
 
 # Simulation parameters
 T = 180  # duration in seconds
-L = 90  # road length in meters
-d_max = 40.0  # horizon
+L = 225  # road length in meters
+d_max = 45.0  # horizon
 clearance = 0.3  # dart spacing
 k = 300  # number of darts thrown
 da = 0.25  # angular resolution
-dt = 0.02  # time step in seconds
+dt = 0.01  # time step in seconds
 sqrtdt = np.sqrt(dt)
 COUNT = int(T / dt) + 1
 
