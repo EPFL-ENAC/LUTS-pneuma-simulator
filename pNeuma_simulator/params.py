@@ -7,7 +7,7 @@ factor = 3.6
 
 # Simulation parameters
 T = 180  # duration in seconds
-L = 270  # road length in meters
+L = 360  # road length in meters
 d_max = 45.0  # horizon
 clearance = 0.3  # dart spacing
 k = 300  # number of darts thrown
@@ -31,8 +31,9 @@ shape = yv.shape
 keep = 1 / 3
 
 # Braking constants
-A = 6
-B = 1 / 2
+delta_t = 1.0
+A = 8 * delta_t
+B = 1 / (2 * delta_t)
 # Manoeuvring constants
 CC = 2.8700
 XC = -0.0512
