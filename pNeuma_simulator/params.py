@@ -32,7 +32,7 @@ keep = 1 / 3
 
 # Braking constants
 delta_t = 1.0
-A = 8 * delta_t
+A = 5 * delta_t
 B = 1 / (2 * delta_t)
 # Manoeuvring constants
 CC = 2.8700
