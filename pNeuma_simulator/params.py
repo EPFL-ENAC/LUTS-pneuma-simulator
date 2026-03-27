@@ -7,7 +7,7 @@ factor = 3.6
 
 # Simulation parameters
 T = 180  # duration in seconds
-L = 8 * 360  # road length in meters
+L = 720  # 8 * 360  # 260  # 4 * 360  # road length in meters
 d_max = 45.0  # horizon
 clearance = 0.3  # dart spacing
 k = 300  # number of darts thrown
