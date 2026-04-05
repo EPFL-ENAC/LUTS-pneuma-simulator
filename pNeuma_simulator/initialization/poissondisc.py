@@ -39,6 +39,7 @@ class PoissonDisc:
         self,
         n_cars: int,
         n_moto: int,
+        lanes=None,
         cell: float = 2.25,
         L: int = 180,
         W: float = 7.2,
@@ -63,6 +64,9 @@ class PoissonDisc:
         self.L, self.W = L, W
         self.n_cars = n_cars
         self.n_moto = n_moto
+        if lanes is None:
+            lanes = [-params.lane / 2, params.lane / 2]  # default: two lanes
+        self.lanes = lanes
         # Cell side length
         self.cell = cell
         # Number of cells in the x- and y-directions of the grid
@@ -284,7 +288,7 @@ class PoissonDisc:
         # Generate car instances in lanes.
         X = np.arange(start=-self.width / 2, stop=self.width / 2, step=self.width / self.n_cars)
         for x in X:
-            for y in [-params.lane / 2, params.lane / 2]:
+            for y in self.lanes:
                 ID = len(self.samples)
                 pt = Particle(x, y, 0.0, 0.0, "Car", ID)
                 self.samples.append(pt)
