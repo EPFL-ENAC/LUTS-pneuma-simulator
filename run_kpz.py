@@ -310,9 +310,7 @@ def main(
 def execute(epochs=128, n_jobs=16, p=0.0001, time_duration=40, brake_duration=3, discounting=0.6, n_cars=232):
     seeds = np.arange(epochs)
     os.makedirs("/scratch/anagnost/kpz", exist_ok=True)
-    path = (
-        f"/scratch/anagnost/kpz/nasch_INM_{round(p, 4)}_{time_duration}_{brake_duration}_{discounting}_{n_cars}"
-    )
+    path = f"/scratch/anagnost/kpz/nasch_INM_{round(p, 4)}_{time_duration}_{brake_duration}_{discounting}_{n_cars}"
     zip_path = f"{path}.zip"
     jsonl_name = f"{os.path.basename(path)}.jsonl"
 
